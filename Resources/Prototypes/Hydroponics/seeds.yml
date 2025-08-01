@@ -654,6 +654,8 @@
   growthStages: 3
   growthComponents:
     - !type:BasicGrowthComponent
+        waterConsumption: 0.6
+        nutrientConsumption: 0.5
     - !type:AtmosphericGrowthComponent
         idealHeat: 288
 
@@ -675,6 +677,8 @@
   growthStages: 3
   growthComponents:
     - !type:BasicGrowthComponent
+        waterConsumption: 0.6
+        nutrientConsumption: 0.8
     - !type:AtmosphericGrowthComponent
         idealHeat: 288
 
