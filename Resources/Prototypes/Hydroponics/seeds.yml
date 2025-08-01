@@ -674,7 +674,6 @@
   production: 6
   yield: 2
   potency: 10
-  splatPrototype: PuddleSplatter
   growthComponents:
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
@@ -719,7 +718,6 @@
   production: 6
   yield: 2
   potency: 10
-  splatPrototype: PuddleSplatter
   growthComponents:
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
@@ -766,7 +764,6 @@
   production: 6
   yield: 2
   potency: 10
-  splatPrototype: PuddleSplatter
   growthComponents:
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
@@ -810,7 +807,6 @@
   yield: 2
   potency: 10
   growthStages: 2
-  splatPrototype: PuddleSplatter
   growthComponents:
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
