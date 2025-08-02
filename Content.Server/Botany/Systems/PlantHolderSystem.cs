@@ -525,7 +525,7 @@ public sealed partial class PlantHolderSystem : EntitySystem
                 return false;
             }
 
-            _botany.Harvest(component.Seed, user, component.YieldMod);
+            _botany.Harvest(component.Seed, user, plantholder);
             AfterHarvest(plantholder, component);
             return true;
         }
@@ -562,7 +562,7 @@ public sealed partial class PlantHolderSystem : EntitySystem
         if (component.Seed == null || !component.Harvest)
             return;
 
-        _botany.AutoHarvest(component.Seed, Transform(uid).Coordinates);
+        _botany.AutoHarvest(component.Seed, Transform(uid).Coordinates, uid);
         AfterHarvest(uid, component);
     }
 

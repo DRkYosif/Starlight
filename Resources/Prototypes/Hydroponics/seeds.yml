@@ -654,9 +654,9 @@
     - Log
   mutationPrototypes:
     - steelcap
-  ligneous: true
   growthComponents:
     - !type:PlantTraitsComponent
+        ligneous: true
         lifespan: 80
         maturation: 15
         production: 3
@@ -678,9 +678,9 @@
   packetPrototype: SteelcapSeeds
   productPrototypes:
     - SteelLog
-  ligneous: true
   growthComponents:
     - !type:PlantTraitsComponent
+        ligneous: true
         lifespan: 80
         maturation: 15
         production: 3
