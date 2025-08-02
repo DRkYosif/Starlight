@@ -1,11 +1,9 @@
-using Content.Server.Botany.Components;
-using Content.Shared.Atmos;
-using Content.Shared.EntityEffects;
+using Robust.Shared.Localization;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
 using System.Linq;
 
-namespace Content.Server.EntityEffects.Effects;
+namespace Content.Shared.EntityEffects.Effects;
 
 /// <summary>
 ///     changes the gases that a plant or produce create.
@@ -20,20 +18,7 @@ public sealed partial class PlantMutateExudeGasses : EntityEffect
 
     public override void Effect(EntityEffectBaseArgs args)
     {
-        var gasses = args.EntityManager.EnsureComponent<ConsumeExudeGasGrowthComponent>(args.TargetEntity);
-        var random = IoCManager.Resolve<IRobustRandom>();
-
-        // Add a random amount of a random gas to this gas dictionary
-        float amount = random.NextFloat(MinValue, MaxValue);
-        Gas gas = random.Pick(Enum.GetValues(typeof(Gas)).Cast<Gas>().ToList());
-        if (gasses.ExudeGasses.ContainsKey(gas))
-        {
-            gasses.ExudeGasses[gas] += amount;
-        }
-        else
-        {
-            gasses.ExudeGasses.Add(gas, amount);
-        }
+        // This is handled in EntityEffectSystem.cs
     }
 
     protected override string? ReagentEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys)
@@ -54,22 +39,10 @@ public sealed partial class PlantMutateConsumeGasses : EntityEffect
 
     [DataField]
     public float MaxValue = 0.5f;
+
     public override void Effect(EntityEffectBaseArgs args)
     {
-        var gasses = args.EntityManager.GetComponent<ConsumeExudeGasGrowthComponent>(args.TargetEntity);
-        var random = IoCManager.Resolve<IRobustRandom>();
-
-        // Add a random amount of a random gas to this gas dictionary
-        float amount = random.NextFloat(MinValue, MaxValue);
-        Gas gas = random.Pick(Enum.GetValues(typeof(Gas)).Cast<Gas>().ToList());
-        if (gasses.ConsumeGasses.ContainsKey(gas))
-        {
-            gasses.ConsumeGasses[gas] += amount;
-        }
-        else
-        {
-            gasses.ConsumeGasses.Add(gas, amount);
-        }
+        // This is handled in EntityEffectSystem.cs
     }
 
     protected override string? ReagentEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys)
