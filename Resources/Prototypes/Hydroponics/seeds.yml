@@ -9,12 +9,13 @@
     - WheatBushel
   mutationPrototypes:
     - meatwheat
-  lifespan: 25
-  maturation: 6
-  production: 3
-  yield: 3
-  potency: 5
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 6
+        production: 3
+        yield: 3
+        potency: 5
     - !type:BasicGrowthComponent
         nutrientConsumption: 0.4
   chemicals:
@@ -42,12 +43,13 @@
   packetPrototype: MeatwheatSeeds
   productPrototypes:
     - MeatwheatBushel
-  lifespan: 25
-  maturation: 6
-  production: 3
-  yield: 3
-  potency: 5
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 6
+        production: 3
+        yield: 3
+        potency: 5
     - !type:BasicGrowthComponent
         nutrientConsumption: 0.4
   chemicals:
@@ -75,12 +77,13 @@
   packetPrototype: OatSeeds
   productPrototypes:
     - OatBushel
-  lifespan: 25
-  maturation: 6
-  production: 3
-  yield: 3
-  potency: 5
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 6
+        production: 3
+        yield: 3
+        potency: 5
     - !type:BasicGrowthComponent
         nutrientConsumption: 0.4
   chemicals:
@@ -111,12 +114,14 @@
     - FoodBanana
   mutationPrototypes:
     - mimana
-  harvestRepeat: Repeat
-  lifespan: 50
-  maturation: 6
-  production: 6
-  yield: 2
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 50
+        maturation: 6
+        production: 6
+        yield: 2
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
     - !type:AtmosphericGrowthComponent
@@ -149,12 +154,14 @@
   packetPrototype: MimanaSeeds
   productPrototypes:
     - FoodMimana
-  harvestRepeat: Repeat
-  lifespan: 50
-  maturation: 6
-  production: 6
-  yield: 2
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 50
+        maturation: 6
+        production: 6
+        yield: 2
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
     - !type:AtmosphericGrowthComponent
@@ -187,13 +194,14 @@
   packetPrototype: CarrotSeeds
   productPrototypes:
     - FoodCarrot
-  lifespan: 25
-  maturation: 10
-  production: 3
-  yield: 3
-  potency: 10
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 10
+        production: 3
+        yield: 3
+        potency: 10
+        growthStages: 3
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
   chemicals:
@@ -230,14 +238,16 @@
     - FoodLaughinPeaPod
   mutationPrototypes:
     - worldPea
-  lifespan: 25
-  growthStages: 3
-  maturation: 7
-  production: 5
-  yield: 3
-  potency: 20
-  harvestRepeat: Repeat
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        growthStages: 3
+        maturation: 7
+        production: 5
+        yield: 3
+        potency: 20
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
         nutrientConsumption: 0.6
@@ -277,12 +287,15 @@
     - lemoon
     - lime
     - orange
-  harvestRepeat: Repeat
-  lifespan: 55
-  maturation: 6
-  production: 6
-  yield: 3
-  potency: 10
+  growthComponents:
+      - !type:PlantTraitsComponent
+          lifespan: 55
+          maturation: 6
+          production: 6
+          yield: 3
+          potency: 10
+      - !type:HarvestComponent
+          harvestRepeat: Repeat
   chemicals:
     Nutriment:
       Min: 1
@@ -309,14 +322,17 @@
   displayName: seeds-lemoon-display-name
   plantRsi: Objects/Specific/Hydroponics/lemoon.rsi
   packetPrototype: LemoonSeeds
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 90
+        maturation: 8
+        production: 6
+        yield: 4
+        potency: 1
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
   productPrototypes:
     - FoodLemoon
-  harvestRepeat: Repeat
-  lifespan: 90
-  maturation: 8
-  production: 6
-  yield: 4
-  potency: 1
   chemicals:
     Vitamin:
       Min: 1
@@ -348,12 +364,15 @@
   mutationPrototypes:
     - orange
     - lemon
-  harvestRepeat: Repeat
-  lifespan: 55
-  maturation: 6
-  production: 6
-  yield: 3
-  potency: 10
+  growthComponents:
+      - !type:PlantTraitsComponent
+          lifespan: 55
+          maturation: 6
+          production: 6
+          yield: 3
+          potency: 10
+      - !type:HarvestComponent
+          harvestRepeat: Repeat
   chemicals:
     Nutriment:
       Min: 1
@@ -386,12 +405,15 @@
     - extradimensionalOrange
     - lemon
     - lime
-  harvestRepeat: Repeat
-  lifespan: 55
-  maturation: 6
-  production: 6
-  yield: 3
-  potency: 10
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 55
+        maturation: 6
+        production: 6
+        yield: 3
+        potency: 10
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
   chemicals:
     Nutriment:
       Min: 1
@@ -411,12 +433,15 @@
   packetPrototype: ExtradimensionalOrangeSeeds
   productPrototypes:
     - FoodExtradimensionalOrange
-  harvestRepeat: Repeat
-  lifespan: 55
-  maturation: 6
-  production: 6
-  yield: 3
-  potency: 10
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 55
+        maturation: 6
+        production: 6
+        yield: 3
+        potency: 10
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
   chemicals:
     Haloperidol:
       Min: 1
@@ -449,13 +474,16 @@
   packetPrototype: PineappleSeeds
   productPrototypes:
     - FoodPineapple
-  harvestRepeat: Repeat
-  lifespan: 55
-  maturation: 6
-  production: 6
-  yield: 3
-  potency: 10
-  growthStages: 3
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 55
+        maturation: 6
+        production: 6
+        yield: 3
+        potency: 10
+        growthStages: 3
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
   chemicals:
     Nutriment:
       Min: 1
@@ -488,13 +516,14 @@
   packetPrototype: PotatoSeeds
   productPrototypes:
     - FoodPotato
-  lifespan: 30
-  maturation: 10
-  production: 3
-  yield: 3
-  potency: 10
-  growthStages: 4
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 30
+        maturation: 10
+        production: 3
+        yield: 3
+        potency: 10
+        growthStages: 4
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
   chemicals:
@@ -527,14 +556,16 @@
     - Sugarcane
   mutationPrototypes:
     - papercane
-  harvestRepeat: Repeat
-  lifespan: 60
-  maturation: 6
-  production: 6
-  yield: 3
-  potency: 10
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 60
+        maturation: 6
+        production: 6
+        yield: 3
+        potency: 10
+        growthStages: 3
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:AtmosphericGrowthComponent
         idealHeat: 298
   chemicals:
@@ -561,14 +592,16 @@
   packetPrototype: TeaPlantSeeds
   productPrototypes:
     - LeavesTea
-  harvestRepeat: Repeat
-  lifespan: 75
-  maturation: 5
-  production: 3
-  yield: 2
-  potency: 20
-  growthStages: 5
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 75
+        maturation: 5
+        production: 3
+        yield: 2
+        potency: 20
+        growthStages: 5
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
     - !type:AtmosphericGrowthComponent
@@ -597,14 +630,16 @@
   packetPrototype: PapercaneSeeds
   productPrototypes:
     - Papercane
-  harvestRepeat: Repeat
-  lifespan: 60
-  maturation: 6
-  production: 6
-  yield: 3
-  potency: 10
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 60
+        maturation: 6
+        production: 6
+        yield: 3
+        potency: 10
+        growthStages: 3
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:AtmosphericGrowthComponent
         idealHeat: 298
 
@@ -619,14 +654,15 @@
     - Log
   mutationPrototypes:
     - steelcap
-  lifespan: 80
-  maturation: 15
   ligneous: true
-  production: 3
-  yield: 5
-  potency: 1
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 80
+        maturation: 15
+        production: 3
+        yield: 5
+        potency: 1
+        growthStages: 3
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
         nutrientConsumption: 0.5
@@ -642,14 +678,15 @@
   packetPrototype: SteelcapSeeds
   productPrototypes:
     - SteelLog
-  lifespan: 80
-  maturation: 15
   ligneous: true
-  production: 3
-  yield: 3
-  potency: 1
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 80
+        maturation: 15
+        production: 3
+        yield: 3
+        potency: 1
+        growthStages: 3
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
         nutrientConsumption: 0.8
@@ -668,13 +705,15 @@
   mutationPrototypes:
     - blueTomato
     - bloodTomato
-  harvestRepeat: Repeat
-  lifespan: 25
-  maturation: 8
-  production: 6
-  yield: 2
-  potency: 10
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 8
+        production: 6
+        yield: 2
+        potency: 10
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
         nutrientConsumption: 0.4
@@ -712,13 +751,15 @@
   packetPrototype: BlueTomatoSeeds
   productPrototypes:
     - FoodBlueTomato
-  harvestRepeat: Repeat
-  lifespan: 25
-  maturation: 8
-  production: 6
-  yield: 2
-  potency: 10
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 8
+        production: 6
+        yield: 2
+        potency: 10
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
         nutrientConsumption: 0.7
@@ -758,13 +799,15 @@
     - FoodBloodTomato
   mutationPrototypes:
     - killerTomato
-  harvestRepeat: Repeat
-  lifespan: 60
-  maturation: 8
-  production: 6
-  yield: 2
-  potency: 10
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 60
+        maturation: 8
+        production: 6
+        yield: 2
+        potency: 10
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
         nutrientConsumption: 0.7
@@ -800,14 +843,16 @@
   packetPrototype: KillerTomatoSeeds
   productPrototypes:
     - MobTomatoKiller
-  harvestRepeat: Repeat
-  lifespan: 25
-  maturation: 15
-  production: 6
-  yield: 2
-  potency: 10
-  growthStages: 2
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 15
+        production: 6
+        yield: 2
+        potency: 10
+        growthStages: 2
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
         nutrientConsumption: 0.7
@@ -843,14 +888,16 @@
     - FoodEggplant
   mutationPrototypes:
     - eggy
-  harvestRepeat: Repeat
-  lifespan: 25
-  maturation: 6
-  production: 6
-  yield: 2
-  potency: 20
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 6
+        production: 6
+        yield: 2
+        potency: 20
+        growthStages: 3
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:AtmosphericGrowthComponent
         idealHeat: 298
   chemicals:
@@ -881,12 +928,14 @@
   packetPrototype: CabbageSeeds
   productPrototypes:
     - FoodCabbage
-  lifespan: 50
-  maturation: 7
-  production: 5
-  yield: 3
-  potency: 10
-  growthStages: 1
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 50
+        maturation: 7
+        production: 5
+        yield: 3
+        potency: 10
+        growthStages: 1
   chemicals:
     Nutriment:
       Min: 1
@@ -915,12 +964,14 @@
   packetPrototype: GarlicSeeds
   productPrototypes:
     - FoodGarlic
-  lifespan: 25
-  maturation: 8
-  production: 5
-  yield: 3
-  potency: 25
-  growthStages: 3
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 8
+        production: 5
+        yield: 3
+        potency: 25
+        growthStages: 3
   chemicals:
     Nutriment:
       Min: 1
@@ -956,12 +1007,15 @@
   mutationPrototypes:
     - goldenApple
     - evilApple # starlight
-  harvestRepeat: Repeat
-  lifespan: 55
-  maturation: 6
-  production: 6
-  yield: 3
-  potency: 10
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 55
+        maturation: 6
+        production: 6
+        yield: 3
+        potency: 10
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
   chemicals:
     Nutriment:
       Min: 1
@@ -991,13 +1045,15 @@
   packetPrototype: GoldenAppleSeeds
   productPrototypes:
     - FoodGoldenApple
-  harvestRepeat: Repeat
-  lifespan: 55
-  maturation: 6
-  production: 6
-  yield: 3
-  potency: 10
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 55
+        maturation: 6
+        production: 6
+        yield: 3
+        potency: 10
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         waterConsumption: 0.75
   chemicals:
@@ -1032,13 +1088,14 @@
   packetPrototype: CornSeeds
   productPrototypes:
     - FoodCorn
-  lifespan: 25
-  maturation: 8
-  production: 6
-  yield: 2
-  potency: 20
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 8
+        production: 6
+        yield: 2
+        potency: 20
+        growthStages: 3
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
     - !type:AtmosphericGrowthComponent
@@ -1073,14 +1130,14 @@
     - FoodOnion
   mutationPrototypes:
     - onionred
-    - bloonion
-  lifespan: 25
-  maturation: 8
-  production: 6
-  yield: 2
-  potency: 20
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 8
+        production: 6
+        yield: 2
+        potency: 20
+        growthStages: 3
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
     - !type:AtmosphericGrowthComponent
@@ -1117,13 +1174,14 @@
   packetPrototype: OnionRedSeeds
   productPrototypes:
     - FoodOnionRed
-  lifespan: 25
-  maturation: 8
-  production: 6
-  yield: 2
-  potency: 20
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 8
+        production: 6
+        yield: 2
+        potency: 20
+        growthStages: 3
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
     - !type:AtmosphericGrowthComponent
@@ -1160,13 +1218,14 @@
   packetPrototype: ChanterelleSeeds
   productPrototypes:
     - FoodMushroom
-  lifespan: 35
-  maturation: 10
-  production: 7
-  yield: 5
-  potency: 1
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 35
+        maturation: 10
+        production: 7
+        yield: 5
+        potency: 1
+        growthStages: 3
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
         nutrientConsumption: 0.5
@@ -1196,13 +1255,15 @@
   packetPrototype: EggySeeds
   productPrototypes:
     - FoodEgg
-  harvestRepeat: Repeat
-  lifespan: 75
-  maturation: 6
-  production: 12
-  yield: 2
-  potency: 20
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 75
+        maturation: 6
+        production: 12
+        yield: 2
+        potency: 20
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         nutrientConsumption: 0.5
     - !type:AtmosphericGrowthComponent
@@ -1233,14 +1294,16 @@
     - LeavesCannabis
   mutationPrototypes:
     - rainbowCannabis
-  harvestRepeat: Repeat
-  lifespan: 75
-  maturation: 8
-  production: 12
-  yield: 2
-  potency: 20
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 75
+        maturation: 8
+        production: 12
+        yield: 2
+        potency: 20
+        growthStages: 3
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         waterConsumption: 0.4
     - !type:AtmosphericGrowthComponent
@@ -1269,14 +1332,16 @@
   packetPrototype: RainbowCannabisSeeds
   productPrototypes:
     - LeavesCannabisRainbow
-  harvestRepeat: Repeat
-  lifespan: 75
-  maturation: 8
-  production: 12
-  yield: 2
-  potency: 20
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 75
+        maturation: 8
+        production: 12
+        yield: 2
+        potency: 20
+        growthStages: 3
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         waterConsumption: 0.4
     - !type:AtmosphericGrowthComponent
@@ -1325,14 +1390,16 @@
   packetPrototype: TobaccoSeeds
   productPrototypes:
     - LeavesTobacco
-  harvestRepeat: Repeat
-  lifespan: 75
-  maturation: 5
-  production: 5
-  yield: 2
-  potency: 20
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 75
+        maturation: 5
+        production: 5
+        yield: 2
+        potency: 20
+        growthStages: 3
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         waterConsumption: 0.4
     - !type:AtmosphericGrowthComponent
@@ -1363,13 +1430,14 @@
     - Nettle
   mutationPrototypes:
     - deathNettle
-  lifespan: 25
-  maturation: 8
-  production: 6
-  yield: 2
-  potency: 20
-  growthStages: 5
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 8
+        production: 6
+        yield: 2
+        potency: 20
+        growthStages: 5
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
     - !type:AtmosphericGrowthComponent
@@ -1400,13 +1468,14 @@
   harvestLogImpact: High
   productPrototypes:
     - DeathNettle
-  lifespan: 25
-  maturation: 8
-  production: 6
-  yield: 2
-  potency: 20
-  growthStages: 5
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 8
+        production: 6
+        yield: 2
+        potency: 20
+        growthStages: 5
     - !type:BasicGrowthComponent
         waterConsumption: 0.7
         nutrientConsumption: 0.8
@@ -1442,13 +1511,15 @@
     - FoodChiliPepper
   mutationPrototypes:
     - chilly
-  harvestRepeat: Repeat
-  lifespan: 25
-  maturation: 6
-  production: 6
-  yield: 2
-  potency: 20
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 6
+        production: 6
+        yield: 2
+        potency: 20
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:AtmosphericGrowthComponent
         idealHeat: 298
   chemicals:
@@ -1483,13 +1554,15 @@
   packetPrototype: ChillySeeds
   productPrototypes:
     - FoodChillyPepper
-  harvestRepeat: Repeat
-  lifespan: 25
-  maturation: 6
-  production: 6
-  yield: 2
-  potency: 20
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 6
+        production: 6
+        yield: 2
+        potency: 20
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:AtmosphericGrowthComponent
         idealHeat: 298
   chemicals:
@@ -1526,13 +1599,14 @@
     - FoodPoppy
   mutationPrototypes:
     - lily
-  lifespan: 25
-  maturation: 10
-  production: 3
-  yield: 3
-  potency: 10
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 10
+        production: 3
+        yield: 3
+        potency: 10
+        growthStages: 3
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
   chemicals:
@@ -1563,13 +1637,14 @@
   packetPrototype: AloeSeeds
   productPrototypes:
     - FoodAloe
-  lifespan: 25
-  maturation: 10
-  production: 3
-  yield: 3
-  potency: 10
-  growthStages: 5
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 10
+        production: 3
+        yield: 3
+        potency: 10
+        growthStages: 5
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
   chemicals:
@@ -1602,13 +1677,14 @@
     - FoodLily
   mutationPrototypes:
     - spacemansTrumpet
-  lifespan: 25
-  maturation: 10
-  production: 3
-  yield: 3
-  potency: 10
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 10
+        production: 3
+        yield: 3
+        potency: 10
+        growthStages: 3
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
   chemicals:
@@ -1639,13 +1715,14 @@
   packetPrototype: LingzhiSeeds
   productPrototypes:
     - FoodLingzhi
-  lifespan: 25
-  maturation: 10
-  production: 3
-  yield: 3
-  potency: 10
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 10
+        production: 3
+        yield: 3
+        potency: 10
+        growthStages: 3
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
   chemicals:
@@ -1678,13 +1755,14 @@
     - FoodAmbrosiaVulgaris
   mutationPrototypes:
     - ambrosiaDeus
-  lifespan: 25
-  maturation: 10
-  production: 3
-  yield: 3
-  potency: 10
-  growthStages: 6
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 10
+        production: 3
+        yield: 3
+        potency: 10
+        growthStages: 6
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
   chemicals:
@@ -1723,13 +1801,14 @@
   packetPrototype: AmbrosiaDeusSeeds
   productPrototypes:
     - FoodAmbrosiaDeus
-  lifespan: 25
-  maturation: 10
-  production: 3
-  yield: 3
-  potency: 10
-  growthStages: 6
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 10
+        production: 3
+        yield: 3
+        potency: 10
+        growthStages: 6
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
   chemicals:
@@ -1770,13 +1849,14 @@
     - FoodGalaxythistle
   mutationPrototypes:
     - glasstle
-  lifespan: 25
-  maturation: 10
-  production: 3
-  yield: 3
-  potency: 10
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 10
+        production: 3
+        yield: 3
+        potency: 10
+        growthStages: 3
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
   chemicals:
@@ -1803,12 +1883,14 @@
   packetPrototype: GlasstleSeeds
   productPrototypes:
     - FoodGlasstle
-  lifespan: 25
-  maturation: 10
-  production: 3
-  yield: 3
-  potency: 10
-  growthStages: 3
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 10
+        production: 3
+        yield: 3
+        potency: 10
+        growthStages: 3
   chemicals:
     Razorium:
       Min: 1
@@ -1833,13 +1915,14 @@
   packetPrototype: FlyAmanitaSeeds
   productPrototypes:
     - FoodFlyAmanita
-  lifespan: 25
-  maturation: 12
-  production: 3
-  yield: 3
-  potency: 10
-  growthStages: 2
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 12
+        production: 3
+        yield: 3
+        potency: 10
+        growthStages: 2
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
         nutrientConsumption: 0.5
@@ -1874,12 +1957,14 @@
   mutationPrototypes:
     - fakeCapfruit
     - realCapfruit
-  lifespan: 65
-  maturation: 25
-  production: 25
-  yield: 1
-  potency: 10
-  growthStages: 2
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 65
+        maturation: 25
+        production: 25
+        yield: 1
+        potency: 10
+        growthStages: 2
   chemicals:
     Nutriment:
       Min: 1
@@ -1908,12 +1993,14 @@
   packetPrototype: FakeCapfruitSeeds
   productPrototypes:
     - FoodFakeCapfruit
-  lifespan: 65
-  maturation: 25
-  production: 25
-  yield: 1
-  potency: 10
-  growthStages: 2
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 65
+        maturation: 25
+        production: 25
+        yield: 1
+        potency: 10
+        growthStages: 2
   chemicals:
     Nutriment:
       Min: 1
@@ -1942,12 +2029,14 @@
   packetPrototype: RealCapfruitSeeds
   productPrototypes:
     - FoodRealCapfruit
-  lifespan: 65
-  maturation: 25
-  production: 25
-  yield: 1
-  potency: 10
-  growthStages: 2
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 65
+        maturation: 25
+        production: 25
+        yield: 1
+        potency: 10
+        growthStages: 2
   chemicals:
     Nutriment:
       Min: 1
@@ -1972,13 +2061,14 @@
   packetPrototype: RiceSeeds
   productPrototypes:
     - RiceBushel
-  lifespan: 25
-  maturation: 6
-  production: 3
-  yield: 3
-  potency: 5
-  growthStages: 4
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 6
+        production: 3
+        yield: 3
+        potency: 5
+        growthStages: 4
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
         nutrientConsumption: 0.4
@@ -2012,13 +2102,14 @@
     - FoodSoybeans
   mutationPrototypes:
     - koibean
-  growthStages: 4
-  lifespan: 25
-  maturation: 6
-  production: 6
-  yield: 3
-  potency: 5
   growthComponents:
+    - !type:PlantTraitsComponent
+        growthStages: 4
+        lifespan: 25
+        maturation: 6
+        production: 6
+        yield: 3
+        potency: 5
     - !type:BasicGrowthComponent
         nutrientConsumption: 0.4
   chemicals:
@@ -2045,13 +2136,14 @@
   packetPrototype: SpacemansTrumpetSeeds
   productPrototypes:
     - FoodSpacemansTrumpet
-  growthStages: 4
-  lifespan: 20
-  maturation: 14
-  production: 3
-  yield: 2
-  potency: 10
   growthComponents:
+    - !type:PlantTraitsComponent
+        growthStages: 4
+        lifespan: 20
+        maturation: 14
+        production: 3
+        yield: 2
+        potency: 10
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
   chemicals:
@@ -2082,13 +2174,14 @@
   packetPrototype: KoibeanSeeds
   productPrototypes:
     - FoodKoibean
-  growthStages: 4
-  lifespan: 25
-  maturation: 6
-  production: 6
-  yield: 3
-  potency: 5
   growthComponents:
+    - !type:PlantTraitsComponent
+        growthStages: 4
+        lifespan: 25
+        maturation: 6
+        production: 6
+        yield: 3
+        potency: 5
     - !type:BasicGrowthComponent
         nutrientConsumption: 0.4
   chemicals:
@@ -2119,12 +2212,14 @@
   packetPrototype: GrapeSeeds
   productPrototypes:
     - FoodGrape
-  lifespan: 50
-  maturation: 6
-  production: 5
-  yield: 3
-  potency: 10
-  growthStages: 2
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 50
+        maturation: 6
+        production: 5
+        yield: 3
+        potency: 10
+        growthStages: 2
   chemicals:
     Nutriment:
       Min: 1
@@ -2155,11 +2250,13 @@
     - FoodWatermelon
   mutationPrototypes:
     - holymelon
-  lifespan: 55
-  maturation: 12
-  production: 3
-  yield: 1
-  potency: 1
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 55
+        maturation: 12
+        production: 3
+        yield: 1
+        potency: 1
   chemicals:
     Nutriment:
       Min: 1
@@ -2192,11 +2289,13 @@
   packetPrototype: HolymelonSeeds
   productPrototypes:
     - FoodHolymelon
-  lifespan: 55
-  maturation: 12
-  production: 3
-  yield: 1
-  potency: 1
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 55
+        maturation: 12
+        production: 3
+        yield: 1
+        potency: 1
   chemicals:
     Nutriment:
       Min: 1
@@ -2220,12 +2319,14 @@
   packetPrototype: CocoaSeeds
   productPrototypes:
     - FoodCocoaPod
-  harvestRepeat: Repeat
-  lifespan: 50
-  maturation: 6
-  production: 6
-  yield: 6
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 50
+        maturation: 6
+        production: 6
+        yield: 6
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         waterConsumption: 1.0
         nutrientConsumption: 0.8
@@ -2259,12 +2360,14 @@
   packetPrototype: BerrySeeds
   productPrototypes:
     - FoodBerries
-  harvestRepeat: Repeat
-  lifespan: 50
-  maturation: 6
-  production: 6
-  yield: 4
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 50
+        maturation: 6
+        production: 6
+        yield: 4
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         nutrientConsumption: 0.6
   chemicals:
@@ -2295,14 +2398,16 @@
   packetPrototype: BungoSeeds
   productPrototypes:
     - FoodBungo
-  harvestRepeat: Repeat
-  lifespan: 50
-  maturation: 8
-  production: 6
-  potency: 10
-  yield: 3
-  growthStages: 4
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 50
+        maturation: 8
+        production: 6
+        potency: 10
+        yield: 3
+        growthStages: 4
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
     - !type:AtmosphericGrowthComponent
@@ -2337,14 +2442,16 @@
     - FoodPeaPod
   mutationPrototypes:
     - laughinPea
-  lifespan: 25
-  growthStages: 3
-  maturation: 8
-  production: 6
-  yield: 3
-  potency: 25
-  harvestRepeat: Repeat
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        growthStages: 3
+        maturation: 8
+        production: 6
+        yield: 3
+        potency: 25
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         nutrientConsumption: 0.5
   chemicals:
@@ -2375,14 +2482,16 @@
   packetPrototype: PeaSeeds
   productPrototypes:
     - FoodWorldPeas
-  lifespan: 25
-  growthStages: 3
-  maturation: 20
-  production: 6
-  yield: 3
-  potency: 25
-  harvestRepeat: Repeat
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        growthStages: 3
+        maturation: 20
+        production: 6
+        yield: 3
+        potency: 25
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
     - !type:BasicGrowthComponent
         nutrientConsumption: 0.5
   chemicals:
@@ -2419,13 +2528,14 @@
     - FoodPumpkin
   mutationPrototypes:
     - bluePumpkin
-  lifespan: 55
-  maturation: 10
-  production: 4
-  yield: 2
-  potency: 10
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 55
+        maturation: 10
+        production: 4
+        yield: 2
+        potency: 10
+        growthStages: 3
     - !type:AtmosphericGrowthComponent
         idealHeat: 288
   chemicals:
@@ -2456,13 +2566,14 @@
   packetPrototype: BluePumpkinSeeds
   productPrototypes:
     - FoodBluePumpkin
-  lifespan: 55
-  maturation: 10
-  production: 4
-  yield: 2
-  potency: 10
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 55
+        maturation: 10
+        production: 4
+        yield: 2
+        potency: 10
+        growthStages: 3
     - !type:AtmosphericGrowthComponent
         idealHeat: 288
   chemicals:
@@ -2499,13 +2610,14 @@
     - CottonBol
   mutationPrototypes:
     - pyrotton
-  lifespan: 25
-  maturation: 8
-  production: 3
-  yield: 3
-  potency: 5
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 8
+        production: 3
+        yield: 3
+        potency: 5
+        growthStages: 3
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
   chemicals:
@@ -2532,13 +2644,14 @@
   packetPrototype: PyrottonSeeds
   productPrototypes:
     - PyrottonBol
-  lifespan: 25
-  maturation: 8
-  production: 3
-  yield: 2
-  potency: 5
-  growthStages: 3
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 8
+        production: 3
+        yield: 2
+        potency: 5
+        growthStages: 3
     - !type:BasicGrowthComponent
         waterConsumption: 0.8
   chemicals:
@@ -2569,12 +2682,15 @@
   packetPrototype: CherrySeeds
   productPrototypes:
     - FoodCherry
-  harvestRepeat: Repeat
-  lifespan: 55
-  maturation: 6
-  production: 6
-  yield: 5
-  potency: 10
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 55
+        maturation: 6
+        production: 6
+        yield: 5
+        potency: 10
+    - !type:HarvestComponent
+        harvestRepeat: Repeat
   chemicals:
     Nutriment:
       Min: 1
@@ -2603,13 +2719,14 @@
   packetPrototype: AnomalyBerrySeeds
   productPrototypes:
     - FoodAnomalyBerry
-  lifespan: 25
-  maturation: 12
-  production: 3
-  yield: 3
-  potency: 10
-  growthStages: 2
   growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 12
+        production: 3
+        yield: 3
+        potency: 10
+        growthStages: 2
     - !type:BasicGrowthComponent
         waterConsumption: 0.6
         nutrientConsumption: 0.5
