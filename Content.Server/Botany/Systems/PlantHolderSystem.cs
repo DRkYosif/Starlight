@@ -134,7 +134,7 @@ public sealed partial class PlantHolderSystem : EntitySystem
                 if (traits.CanScream)
                     args.PushMarkup(Loc.GetString("mutation-plant-scream"));
 
-                if (component.Seed.Viable == false)
+                if (!traits.Viable)
                     args.PushMarkup(Loc.GetString("mutation-plant-unviable"));
             }
             else
