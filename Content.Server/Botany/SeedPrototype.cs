@@ -45,7 +45,7 @@ public partial struct SeedChemQuantity
 }
 
 [Virtual, DataDefinition]
-[Access(typeof(BotanySystem), typeof(PlantHolderSystem), typeof(SeedExtractorSystem), typeof(EntityEffectSystem), typeof(MutationSystem), typeof(HarvestSystem), typeof(PlantTraitsSystem))]
+[Access(typeof(BotanySystem), typeof(PlantHolderSystem), typeof(SeedExtractorSystem), typeof(EntityEffectSystem), typeof(MutationSystem), typeof(HarvestSystem), typeof(PlantTraitsSystem), typeof(BotanySwabSystem), typeof(BasicGrowthSystem))]
 public partial class SeedData
 {
     #region Tracking
@@ -154,7 +154,7 @@ public partial class SeedData
     /// The growth components used by this seed.
     /// </summary>
     [DataField]
-    public List<PlantGrowthComponent> GrowthComponents = new();
+    public GrowthComponentsHolder GrowthComponents = new();
 
     /// <summary>
     /// Log impact for harvest operations.
@@ -171,10 +171,11 @@ public partial class SeedData
     public SeedData Clone()
     {
         DebugTools.Assert(!Immutable, "There should be no need to clone an immutable seed.");
+        var serializationManager = IoCManager.Resolve<ISerializationManager>();
 
         var newSeed = new SeedData
         {
-            GrowthComponents = new List<PlantGrowthComponent>(),
+            GrowthComponents = serializationManager.CreateCopy(GrowthComponents, notNullableOverride: true),
             HarvestLogImpact = HarvestLogImpact,
             PlantLogImpact = PlantLogImpact,
             Name = Name,
@@ -195,13 +196,6 @@ public partial class SeedData
             Unique = true,
         };
 
-        // Deep copy growth components
-        foreach (var component in GrowthComponents)
-        {
-            var newComponent = component.DupeComponent();
-            newSeed.GrowthComponents.Add(newComponent);
-        }
-
         newSeed.Mutations.AddRange(Mutations);
         return newSeed;
     }
@@ -212,9 +206,10 @@ public partial class SeedData
     /// </summary>
     public SeedData SpeciesChange(SeedData other)
     {
+        var serializationManager = IoCManager.Resolve<ISerializationManager>();
         var newSeed = new SeedData
         {
-            GrowthComponents = new List<PlantGrowthComponent>(),
+            GrowthComponents = serializationManager.CreateCopy(other.GrowthComponents, notNullableOverride: true),
             HarvestLogImpact = other.HarvestLogImpact,
             PlantLogImpact = other.PlantLogImpact,
             Name = other.Name,
@@ -250,13 +245,6 @@ public partial class SeedData
             {
                 newSeed.Chemicals.Remove(originalChem.Key);
             }
-        }
-
-        // Deep copy growth components from the new species
-        foreach (var component in other.GrowthComponents)
-        {
-            var newComponent = component.DupeComponent();
-            newSeed.GrowthComponents.Add(newComponent);
         }
 
         return newSeed;
