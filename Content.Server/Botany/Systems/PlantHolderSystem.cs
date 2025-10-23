@@ -590,7 +590,7 @@ public sealed partial class PlantHolderSystem : EntitySystem
     {
         PlantHarvestComponent? harvest = null;
         PlantTraitsComponent? traits = null;
-        Resolve(uid, ref harvest, ref traits);
+        Resolve(uid, ref harvest, ref traits, false);
 
         component.UpdateSpriteAfterUpdate = false;
 
