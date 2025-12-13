@@ -456,7 +456,6 @@ public sealed partial class PlantHolderSystem : EntitySystem
 
         CheckHealth(uid, component);
 
-
         if (component.UpdateSpriteAfterUpdate)
             UpdateSprite(uid, component);
     }
