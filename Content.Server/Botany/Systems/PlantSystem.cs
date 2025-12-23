@@ -2,6 +2,9 @@ using JetBrains.Annotations;
 using Content.Server.Botany.Components;
 using Content.Server.Botany.Events;
 using Content.Server.Popups;
+using Content.Shared.Botany;
+using Content.Shared.Chemistry.EntitySystems;
+using Content.Shared.EntityEffects;
 using Content.Shared.Examine;
 using Content.Shared.Interaction;
 using Content.Shared.Random;
@@ -35,6 +38,11 @@ public sealed class PlantSystem : EntitySystem
         SubscribeLocalEvent<PlantComponent, OnPlantGrowEvent>(OnPlantGrow);
         SubscribeLocalEvent<PlantComponent, ExaminedEvent>(OnExamined);
         SubscribeLocalEvent<PlantComponent, InteractUsingEvent>(OnInteractUsing);
+    }
+
+    private void OnMapInit(Entity<PlantComponent> ent, ref MapInitEvent args)
+    {
+        PlantingPlant(ent.AsNullable());
     }
 
     private void OnCrossPollinate(Entity<PlantComponent> ent, ref PlantCrossPollinateEvent args)
@@ -201,7 +209,96 @@ public sealed class PlantSystem : EntitySystem
     {
         var (_, plant) = ent;
 
-        plant.Potency = Math.Max(plant.Potency + delta, 1);
-        Dirty(ent);
+        ent.Comp.Potency = Math.Max(ent.Comp.Potency + amount, 1);
+    }
+
+    /// <summary>
+    /// Removes the plant from the tray.
+    /// </summary>
+    [PublicAPI]
+    public void RemovePlant(Entity<PlantComponent?> ent)
+    {
+        var (uid, component) = ent;
+
+        if (!Resolve(uid, ref component, false))
+            return;
+
+        QueueDel(uid);
+
+        // Delete the plant from the tray.
+        if (TryGetTray(ent, out var trayEnt))
+            trayEnt.Comp!.PlantEntity = null;
+    }
+
+    /// <summary>
+    /// Updates the sprite of the plant.
+    /// </summary>
+    [PublicAPI]
+    public void UpdateSprite(Entity<PlantComponent?> ent)
+    {
+        var (uid, component) = ent;
+
+        if (!Resolve(uid, ref component, false))
+            return;
+
+        if (!TryComp<PlantHolderComponent>(uid, out var plantHolder)
+            || !TryComp<PlantDataComponent>(uid, out var plantData)
+            || !TryComp<PlantHarvestComponent>(uid, out var harvest))
+            return;
+
+        if (!TryComp<AppearanceComponent>(uid, out var plantApp))
+            return;
+
+        _appearance.SetData(uid, PlantVisuals.PlantRsi, plantData.PlantRsi.ToString(), plantApp);
+
+        if (plantHolder.Dead)
+        {
+            _appearance.SetData(uid, PlantVisuals.PlantState, "dead", plantApp);
+        }
+        else if (harvest.ReadyForHarvest)
+        {
+            _appearance.SetData(uid, PlantVisuals.PlantState, "harvest", plantApp);
+        }
+        else
+        {
+            if (plantHolder.Age < component.Maturation)
+            {
+                var growthStage = Math.Max(1, (int)(plantHolder.Age * component.GrowthStages / component.Maturation));
+                _appearance.SetData(uid, PlantVisuals.PlantState, $"stage-{growthStage}", plantApp);
+            }
+            else
+            {
+                _appearance.SetData(uid, PlantVisuals.PlantState, $"stage-{component.GrowthStages}", plantApp);
+            }
+        }
+
+        if (TryGetTray(uid, out var trayEnt))
+            _tray.UpdateWarnings(trayEnt);
+    }
+
+    /// <summary>
+    /// Planting a plant.
+    /// </summary>
+    [PublicAPI]
+    public void PlantingPlant(Entity<PlantComponent?> plantEnt)
+    {
+        var (plantUid, plantComp) = plantEnt;
+
+        if (!Resolve(plantUid, ref plantComp, false))
+            return;
+
+        if (!TryComp<PlantHolderComponent>(plantUid, out var plantHolder))
+            return;
+
+        plantHolder.Health = plantComp.Endurance;
+        plantHolder.LastCycle = _gameTiming.CurTime;
+
+        if (TryComp<PlantHarvestComponent>(plantUid, out var harvest))
+        {
+            harvest.ReadyForHarvest = false;
+            harvest.LastHarvest = 0;
+        }
+
+        UpdateSprite(plantEnt.AsNullable());
     }
 }

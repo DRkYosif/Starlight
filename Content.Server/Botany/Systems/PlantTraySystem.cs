@@ -56,21 +56,6 @@ public sealed class PlantTraySystem : EntitySystem
         SubscribeLocalEvent<PlantTrayComponent, SolutionTransferredEvent>(OnSolutionTransferred);
     }
 
-    public override void Update(float frameTime)
-    {
-        base.Update(frameTime);
-
-        var query = EntityQueryEnumerator<PlantTrayComponent>();
-        while (query.MoveNext(out var uid, out var tray))
-        {
-            if (tray.NextUpdate > _gameTiming.CurTime)
-                continue;
-
-            tray.NextUpdate = _gameTiming.CurTime + tray.UpdateDelay;
-            Update((uid, tray));
-        }
-    }
-
     private void OnExamine(Entity<PlantTrayComponent> ent, ref ExaminedEvent args)
     {
         var (uid, component) = ent;
@@ -140,7 +125,7 @@ public sealed class PlantTraySystem : EntitySystem
                     args.User,
                     PopupType.Medium);
 
-                PlantingPlant(uid, plantUid);
+                PlantingPlantInTray(uid, plantUid);
 
                 if (TryComp<PlantHolderComponent>(tray.PlantEntity!.Value, out var plantHolder)
                     && seeds.HealthOverride != null)
@@ -269,142 +254,17 @@ public sealed class PlantTraySystem : EntitySystem
     /// Planting a plant in a tray.
     /// </summary>
     [PublicAPI]
-    public void PlantingPlant(Entity<PlantTrayComponent?> trayEnt, Entity<PlantComponent?> plantEnt)
+    public void PlantingPlantInTray(Entity<PlantTrayComponent?> trayEnt, EntityUid plantUid)
     {
         var (trayUid, trayComp) = trayEnt;
-        var (plantUid, plantComp) = plantEnt;
 
-        if (!Resolve(trayUid, ref trayComp, false) || !Resolve(plantUid, ref plantComp, false))
+        if (!Resolve(trayUid, ref trayComp, false))
             return;
 
-        if (!TryComp<PlantHolderComponent>(plantUid, out var plantHolder))
-            return;
-
-        plantHolder.Dead = false;
-        plantHolder.Age = 1;
-        plantHolder.Health = plantComp.Endurance;
-
-        if (TryComp<PlantHarvestComponent>(plantUid, out var harvest))
-        {
-            harvest.ReadyForHarvest = false;
-            harvest.LastHarvest = 0;
-        }
-
-        trayComp.LastCycle = _gameTiming.CurTime;
-
+        _plant.PlantingPlant(plantUid);
         _transform.SetCoordinates(plantUid, Transform(trayUid).Coordinates);
         _transform.SetParent(plantUid, trayUid);
         trayComp.PlantEntity = plantUid;
-
-        UpdateSprite(trayEnt.AsNullable());
-    }
-
-    private void OnSolutionTransferred(Entity<PlantTrayComponent> ent, ref SolutionTransferredEvent args)
-    {
-        _audio.PlayPvs(ent.Comp.WateringSound, ent.Owner);
-    }
-
-    private void Mutate(Entity<PlantTrayComponent?> ent, float severity)
-    {
-        var (uid, component) = ent;
-
-        if (!Resolve(uid, ref component, false))
-            return;
-
-        if (component.PlantEntity != null && !Deleted(component.PlantEntity))
-            _mutation.MutatePlant(ent, component.PlantEntity.Value, severity);
-    }
-
-    public void Update(Entity<PlantTrayComponent?> ent)
-    {
-        var (uid, component) = ent;
-
-        if (!Resolve(uid, ref component, false))
-            return;
-
-        UpdateReagents(ent);
-
-        var curTime = _gameTiming.CurTime;
-
-        // ForceUpdate is used for external triggers like swabbing
-        if (component.ForceUpdate)
-            component.ForceUpdate = false;
-        else if (curTime < component.LastCycle + component.CycleDelay)
-        {
-            if (component.UpdateSpriteAfterUpdate)
-                UpdateSprite(ent);
-            return;
-        }
-
-        component.LastCycle = curTime;
-
-        if (component.PlantEntity == null || Deleted(component.PlantEntity))
-        {
-            if (component.UpdateSpriteAfterUpdate)
-                UpdateSprite(ent);
-            return;
-        }
-
-        var plantUid = component.PlantEntity.Value;
-        if (!TryComp<PlantHolderComponent>(plantUid, out var plantHolder))
-        {
-            if (component.UpdateSpriteAfterUpdate)
-                UpdateSprite(ent);
-            return;
-        }
-
-        if (plantHolder.Dead)
-        {
-            if (component.UpdateSpriteAfterUpdate)
-                UpdateSprite(ent);
-            return;
-        }
-
-        var plantGrow = new OnPlantGrowEvent((uid, component));
-        RaiseLocalEvent(plantUid, ref plantGrow);
-        RaiseLocalEvent(uid, ref plantGrow);
-
-        // Process mutations.
-        if (plantHolder.MutationLevel > 0)
-        {
-            Mutate(ent, Math.Min(plantHolder.MutationLevel, 25));
-            component.UpdateSpriteAfterUpdate = true;
-            plantHolder.MutationLevel = 0;
-        }
-
-        if (plantHolder.Health <= 0)
-        {
-            _plantHolder.Die(plantUid);
-            component.UpdateSpriteAfterUpdate = true;
-        }
-
-        if (component.UpdateSpriteAfterUpdate)
-            UpdateSprite(ent);
-    }
-
-    /// <summary>
-    /// Removes the plant from the tray.
-    /// </summary>
-    /// <param name="ent">The entity tray component.</param>
-    [PublicAPI]
-    public void RemovePlant(Entity<PlantTrayComponent?> ent)
-    {
-        var (uid, component) = ent;
-
-        if (!Resolve(uid, ref component, false))
-            return;
-
-        if (component.PlantEntity == null || Deleted(component.PlantEntity))
-            return;
-
-        QueueDel(component.PlantEntity.Value);
-        component.PlantEntity = null;
-
-        component.PestLevel = 0;
-        component.ImproperPressure = false;
-        component.ImproperHeat = false;
-
-        UpdateSprite(ent);
     }
 
     /// <summary>

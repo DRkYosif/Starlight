@@ -1,5 +1,5 @@
-using JetBrains.Annotations;
 using System.Linq;
+using JetBrains.Annotations;
 using Content.Server.Botany.Components;
 using Content.Shared.Atmos;
 using Content.Shared.Chemistry.Reagent;
@@ -18,6 +18,7 @@ public sealed partial class MutationSystem : EntitySystem
     [Dependency] private readonly IRobustRandom _random = default!;
     [Dependency] private readonly PlantTraySystem _plantTray = default!;
     [Dependency] private readonly SharedEntityEffectsSystem _entityEffects = default!;
+    [Dependency] private readonly TransformSystem _transform = default!;
 
     private static readonly ProtoId<RandomPlantMutationListPrototype> RandomPlantMutations = "RandomPlantMutations";
     private RandomPlantMutationListPrototype _randomMutations = default!;
@@ -67,7 +68,7 @@ public sealed partial class MutationSystem : EntitySystem
     /// preserving lifecycle state.
     /// </summary>
     [PublicAPI]
-    public void SpeciesChange(Entity<PlantDataComponent?> oldPlant, EntProtoId newPlantEnt, Entity<PlantTrayComponent?> trayEnt)
+    public void SpeciesChange(Entity<PlantDataComponent?> oldPlant, EntProtoId newPlantEnt)
     {
         if (!Resolve(oldPlant, ref oldPlant.Comp, false) || !Resolve(trayEnt, ref trayEnt.Comp, false))
             return;
@@ -75,12 +76,22 @@ public sealed partial class MutationSystem : EntitySystem
         if (oldPlant.Comp.MutationPrototypes.Count == 0)
             return;
 
+        // Clone state via snapshot and apply to new plant.
         var newPlantUid = Spawn(newPlantEnt);
         var snapshot = _botany.ClonePlantSnapshotData(oldPlant.Owner, cloneLifecycle: true);
 
-        // Clone state via snapshot and apply to new plant.
+        if (_plant.TryGetTray(oldPlant.Owner, out var trayEnt))
+        {
+            _plantTray.PlantingPlantInTray(trayEnt, newPlantUid);
+        }
+        else
+        {
+            _transform.SetCoordinates(newPlantUid, Transform(oldPlant.Owner).Coordinates);
+            _plant.PlantingPlant(newPlantUid);
+        }
+
         QueueDel(oldPlant.Owner);
-        _plantTray.PlantingPlant(trayEnt, newPlantUid);
+
         _botany.ApplyPlantSnapshotData(newPlantUid, snapshot);
     }
 
