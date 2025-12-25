@@ -109,10 +109,7 @@ public sealed class PlantTraySystem : EntitySystem
             if (tray.PlantEntity == null || Deleted(tray.PlantEntity))
             {
                 args.Handled = true;
-                var plantUid = Spawn(seeds.PlantProtoId, Transform(uid).Coordinates);
-
-                if (seeds.PlantData != null)
-                    _botany.ApplyPlantSnapshotData(plantUid, seeds.PlantData);
+                var plantUid = Spawn(seeds.PlantProtoId, _transform.GetMapCoordinates(uid), seeds.PlantData);
 
                 if (!TryComp<PlantDataComponent>(plantUid, out var plantData))
                     return;
@@ -247,6 +244,104 @@ public sealed class PlantTraySystem : EntitySystem
             }
 
             QueueDel(args.Used);
+        }
+    }
+
+    private void OnSolutionTransferred(Entity<PlantTrayComponent> ent, ref SolutionTransferredEvent args)
+    {
+        _audio.PlayPvs(ent.Comp.WateringSound, ent.Owner);
+    }
+
+    public override void Update(float frameTime)
+    {
+        base.Update(frameTime);
+
+        var query = EntityQueryEnumerator<PlantTrayComponent>();
+        while (query.MoveNext(out var uid, out var tray))
+        {
+            if (tray.NextUpdate > _gameTiming.CurTime)
+                continue;
+
+            tray.NextUpdate = _gameTiming.CurTime + tray.UpdateDelay;
+            UpdateWarnings(uid);
+            UpdateReagents(uid);
+        }
+    }
+
+    /// <summary>
+    /// Updates the sprite of the tray.
+    /// </summary>
+    [PublicAPI]
+    public void UpdateWarnings(Entity<PlantTrayComponent?> ent)
+    {
+        var (uid, component) = ent;
+
+        if (!Resolve(uid, ref component, false))
+            return;
+
+        if (!component.DrawWarnings)
+            return;
+
+        if (!TryComp<AppearanceComponent>(uid, out var app))
+            return;
+
+        if (!TryGetPlant(ent, out var plantUid))
+        {
+            _appearance.SetData(uid, PlantTrayVisuals.HealthLight, false, app);
+            _appearance.SetData(uid, PlantTrayVisuals.AlertLight, false, app);
+            _appearance.SetData(uid, PlantTrayVisuals.HarvestLight, false, app);
+            return;
+        }
+
+        if (!TryComp<PlantHolderComponent>(plantUid, out var plantHolder)
+            || !TryComp<PlantComponent>(plantUid, out var plant)
+            || !TryComp<PlantHarvestComponent>(plantUid, out var harvest))
+            return;
+
+        // TODO: dehardcode those alert levels.
+        _appearance.SetData(uid, PlantTrayVisuals.HealthLight, plantHolder.Health <= plant.Endurance / 2f, app);
+        _appearance.SetData(uid, PlantTrayVisuals.WaterLight, component.WaterLevel <= 15, app);
+        _appearance.SetData(uid, PlantTrayVisuals.NutritionLight, component.NutritionLevel <= 8, app);
+        _appearance.SetData(uid,
+            PlantTrayVisuals.AlertLight,
+            component.WeedLevel >= 5 || plantHolder.PestLevel >= 5 || plantHolder.Toxins >= 40 || plantHolder.ImproperHeat
+            || plantHolder.ImproperPressure || plantHolder.MissingGas > 0,
+            app);
+        _appearance.SetData(uid, PlantTrayVisuals.HarvestLight, harvest is { ReadyForHarvest: true }, app);
+    }
+
+    /// <summary>
+    /// Updates the reagents of the tray.
+    /// </summary>
+    [PublicAPI]
+    public void UpdateReagents(Entity<PlantTrayComponent?> ent)
+    {
+        var (uid, component) = ent;
+
+        if (!Resolve(uid, ref component, false))
+            return;
+
+        if (!_solutionContainer.ResolveSolution(uid, component.SoilSolutionName, ref component.SoilSolution, out var solution))
+            return;
+
+        if (!TryGetPlant(ent, out var plantUid))
+            return;
+
+        if (!TryComp<PlantHolderComponent>(plantUid, out var plantHolder))
+            return;
+
+        if (solution.Volume > 0 && plantHolder.MutationLevel < 25)
+        {
+            var contents = component.SoilSolution.Value.Comp.Solution.Contents.ToArray();
+
+            foreach (var entry in contents)
+            {
+                var reagentProto = _prototype.Index<ReagentPrototype>(entry.Reagent.Prototype);
+                _entityEffects.ApplyEffects(uid, [.. reagentProto.PlantMetabolisms], entry.Quantity.Float());
+                _entityEffects.ApplyEffects(plantUid.Value, [.. reagentProto.PlantMetabolisms], entry.Quantity.Float());
+            }
+
+            _solutionContainer.RemoveEachReagent(component.SoilSolution.Value, FixedPoint2.New(1));
         }
     }
 
