@@ -1,6 +1,5 @@
 using Content.Server.Botany.Components;
 using Content.Server.Botany.Systems;
-using Content.Shared.Atmos;
 using Content.Shared.EntityEffects;
 using Content.Shared.EntityEffects.Effects.Botany;
 using Robust.Shared.Random;
@@ -14,24 +13,12 @@ namespace Content.Server.EntityEffects.Effects.Botany;
 public sealed partial class PlantMutateExudeGasesEntityEffectSystem : EntityEffectSystem<PlantTrayComponent, PlantMutateExudeGases>
 {
     [Dependency] private readonly IRobustRandom _random = default!;
-    [Dependency] private readonly PlantTraySystem _plantTray = default!;
+    [Dependency] private readonly ConsumeExudeGasGrowthSystem _consumeExudeGasGrowth = default!;
 
     protected override void Effect(Entity<PlantTrayComponent> entity, ref EntityEffectEvent<PlantMutateExudeGases> args)
     {
-        if (!_plantTray.TryGetPlant(entity.AsNullable(), out _))
-            return;
-
-        var gasComponent = EnsureComp<ConsumeExudeGasGrowthComponent>(entity.Comp.PlantEntity!.Value);
-        var gasses = gasComponent.ExudeGasses;
-
-        // Add a random amount of a random gas to this gas dictionary.
         var amount = _random.NextFloat(args.Effect.MinValue, args.Effect.MaxValue);
-        var gas = _random.Pick(Enum.GetValues<Gas>());
-
-        if (!gasses.TryAdd(gas, amount))
-        {
-            gasses[gas] += amount;
-        }
+        _consumeExudeGasGrowth.MutateRandomExudeGasses(entity.Owner, amount);
     }
 }
 
@@ -42,24 +29,12 @@ public sealed partial class PlantMutateExudeGasesEntityEffectSystem : EntityEffe
 public sealed partial class PlantMutateConsumeGasesEntityEffectSystem : EntityEffectSystem<PlantTrayComponent, PlantMutateConsumeGases>
 {
     [Dependency] private readonly IRobustRandom _random = default!;
-    [Dependency] private readonly PlantTraySystem _plantTray = default!;
+    [Dependency] private readonly ConsumeExudeGasGrowthSystem _consumeExudeGasGrowth = default!;
 
     protected override void Effect(Entity<PlantTrayComponent> entity, ref EntityEffectEvent<PlantMutateConsumeGases> args)
     {
-        if (!_plantTray.TryGetPlant(entity.AsNullable(), out _))
-            return;
-
-        var gasComponent = EnsureComp<ConsumeExudeGasGrowthComponent>(entity.Comp.PlantEntity!.Value);
-        var gasses = gasComponent.ConsumeGasses;
-
-        // Add a random amount of a random gas to this gas dictionary.
         var amount = _random.NextFloat(args.Effect.MinValue, args.Effect.MaxValue);
-        var gas = _random.Pick(Enum.GetValues<Gas>());
-
-        if (!gasses.TryAdd(gas, amount))
-        {
-            gasses[gas] += amount;
-        }
+        _consumeExudeGasGrowth.MutateRandomConsumeGasses(entity.Owner, amount);
     }
 }
 

@@ -14,17 +14,12 @@ namespace Content.Server.EntityEffects.Effects.Botany.PlantAttributes;
 public sealed partial class PlantDestroySeedsEntityEffectSystem : EntityEffectSystem<PlantTrayComponent, PlantDestroySeeds>
 {
     [Dependency] private readonly PopupSystem _popup = default!;
-    [Dependency] private readonly PlantTraySystem _plantTray = default!;
+    [Dependency] private readonly PlantHolderSystem _plantHolder = default!;
+    [Dependency] private readonly PlantTraitsSystem _plantTraits = default!;
 
     protected override void Effect(Entity<PlantTrayComponent> entity, ref EntityEffectEvent<PlantDestroySeeds> args)
     {
         if (!_plantTray.TryGetPlant(entity.AsNullable(), out var plant))
-            return;
-
-        if (!TryComp<PlantHolderComponent>(plant, out var plantHolder) || plantHolder.Dead)
-            return;
-
-        if (!TryComp<PlantTraitsComponent>(plant, out var traits) || traits.Seedless)
             return;
 
         _popup.PopupEntity(
@@ -32,6 +27,6 @@ public sealed partial class PlantDestroySeedsEntityEffectSystem : EntityEffectSy
             entity,
             PopupType.SmallCaution
         );
-        traits.Seedless = true;
+        _plantTraits.AddTrait(entity.Owner, new TraitSeedless());
     }
 }

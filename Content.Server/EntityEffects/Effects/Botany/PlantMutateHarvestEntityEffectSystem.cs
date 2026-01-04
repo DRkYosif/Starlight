@@ -11,22 +11,10 @@ namespace Content.Server.EntityEffects.Effects.Botany;
 /// <inheritdoc cref="EntityEffectSystem{T,TEffect}"/>
 public sealed partial class PlantMutateHarvestEntityEffectSystem : EntityEffectSystem<PlantTrayComponent, PlantMutateHarvest>
 {
-    [Dependency] private readonly PlantTraySystem _plantTray = default!;
+    [Dependency] private readonly PlantHarvestSystem _plantHarvest = default!;
 
-    protected override void Effect(Entity<PlantTrayComponent> entity, ref EntityEffectEvent<PlantMutateHarvest> args)
+    protected override void Effect(Entity<PlantComponent> entity, ref EntityEffectEvent<PlantMutateHarvest> args)
     {
-        if (!_plantTray.TryGetPlant(entity.AsNullable(), out var plant))
-            return;
-
-        var harvest = EnsureComp<PlantHarvestComponent>(plant.Value);
-        switch (harvest.HarvestRepeat)
-        {
-            case HarvestType.NoRepeat:
-                harvest.HarvestRepeat = HarvestType.Repeat;
-                break;
-            case HarvestType.Repeat:
-                harvest.HarvestRepeat = HarvestType.SelfHarvest;
-                break;
-        }
+        _plantHarvest.ChangeHarvestRepeat(entity.Owner);
     }
 }

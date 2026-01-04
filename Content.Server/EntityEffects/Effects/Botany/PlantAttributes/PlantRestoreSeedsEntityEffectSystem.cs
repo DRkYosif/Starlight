@@ -13,18 +13,15 @@ namespace Content.Server.EntityEffects.Effects.Botany.PlantAttributes;
 public sealed partial class PlantRestoreSeedsEntityEffectSystem : EntityEffectSystem<PlantTrayComponent, PlantRestoreSeeds>
 {
     [Dependency] private readonly PopupSystem _popup = default!;
-    [Dependency] private readonly PlantTraySystem _plantTray = default!;
+    [Dependency] private readonly PlantHolderSystem _plantHolder = default!;
+    [Dependency] private readonly PlantTraitsSystem _plantTraits = default!;
 
     protected override void Effect(Entity<PlantTrayComponent> entity, ref EntityEffectEvent<PlantRestoreSeeds> args)
     {
         if (!_plantTray.HasPlantAlive(entity.AsNullable()))
             return;
 
-        var plantUid = entity.Comp.PlantEntity!.Value;
-        if (!TryComp<PlantTraitsComponent>(plantUid, out var traits) || !traits.Seedless)
-            return;
-
         _popup.PopupEntity(Loc.GetString("botany-plant-seedsrestored"), entity);
-        traits.Seedless = false;
+        _plantTraits.DelTrait(entity.Owner, new TraitSeedless());
     }
 }

@@ -11,14 +11,14 @@ namespace Content.Server.EntityEffects.Effects.Botany.PlantAttributes;
 /// <inheritdoc cref="EntityEffectSystem{T,TEffect}"/>
 public sealed partial class PlantPhalanximineEntityEffectSystem : EntityEffectSystem<PlantTrayComponent, PlantPhalanximine>
 {
-    [Dependency] private readonly PlantTraySystem _plantTray = default!;
+    [Dependency] private readonly PlantHolderSystem _plantHolder = default!;
+    [Dependency] private readonly PlantTraitsSystem _plantTrait = default!;
 
     protected override void Effect(Entity<PlantTrayComponent> entity, ref EntityEffectEvent<PlantPhalanximine> args)
     {
         if (!_plantTray.TryGetPlant(entity.AsNullable(), out var plant))
             return;
 
-        if (TryComp<PlantTraitsComponent>(plant, out var traits))
-            traits.Viable = true;
+        _plantTrait.DelTrait(entity.Owner, new TraitUnviable());
     }
 }

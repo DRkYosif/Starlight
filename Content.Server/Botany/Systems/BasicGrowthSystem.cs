@@ -15,6 +15,10 @@ public sealed class BasicGrowthSystem : EntitySystem
     [Dependency] private readonly IRobustRandom _random = default!;
     [Dependency] private readonly PlantTraySystem _plantTray = default!;
     [Dependency] private readonly MutationSystem _mutation = default!;
+    [Dependency] private readonly PlantHolderSystem _plantHolder = default!;
+    [Dependency] private readonly PlantSystem _plant = default!;
+    [Dependency] private readonly PlantTraySystem _plantTray = default!;
+    [Dependency] private readonly PlantHarvestSystem _plantHarvest = default!;
 
     public override void Initialize()
     {
@@ -24,7 +28,9 @@ public sealed class BasicGrowthSystem : EntitySystem
 
     private void OnCrossPollinate(Entity<BasicGrowthComponent> ent, ref PlantCrossPollinateEvent args)
     {
-        if (!_botany.TryGetPlantComponent<BasicGrowthComponent>(args.PollenData, args.PollenProtoId, out var pollenData))
+        if (!_botany.TryGetPlantComponent<BasicGrowthComponent>(args.PollenData,
+                args.PollenProtoId,
+                out var pollenData))
             return;
 
         _mutation.CrossFloat(ref ent.Comp.WaterConsumption, pollenData.WaterConsumption);
@@ -33,8 +39,11 @@ public sealed class BasicGrowthSystem : EntitySystem
 
     private void OnPlantGrow(Entity<BasicGrowthComponent> ent, ref OnPlantGrowEvent args)
     {
-        var (plantUid, component) = ent;
-        var (_, tray) = args.Tray;
+        var (plantUid, plantComp) = ent;
+        var (trayUid, trayComp) = args.Tray;
+
+        if (trayComp == null)
+            return;
 
         if (!TryComp<PlantHolderComponent>(plantUid, out var holder))
             return;
@@ -51,40 +60,18 @@ public sealed class BasicGrowthSystem : EntitySystem
 
         // Advance plant age here.
         if (holder.SkipAging > 0)
-        {
-            holder.SkipAging--;
-        }
-        else
-        {
-            if (_random.Prob(0.8f))
-                holder.Age += (int)(1 * tray.TraySpeedMultiplier);
+            _plantHolder.AdjustsSkipAging(plantUid, -1);
+        else if (_random.Prob(0.8f))
+            _plantHolder.AdjustsAge(plantUid, 1);
 
-            tray.UpdateSpriteAfterUpdate = true;
+        if (plantComp.WaterConsumption > 0 && trayComp.WaterLevel > 0 && _random.Prob(0.75f))
+        {
+            _plantTray.AdjustWater(trayUid,-MathF.Max(0f, plantComp.WaterConsumption * trayComp.TrayConsumptionMultiplier));
         }
 
-        if (holder.Age < 0) // Revert back to seed packet!
+        if (plantComp.NutrientConsumption > 0 && trayComp.NutritionLevel > 0 && _random.Prob(0.75f))
         {
-            // will put it in the trays hands if it has any, please do not try doing this.
-            _botany.SpawnSeedPacketFromPlant(plantUid, Transform(args.Tray.Owner).Coordinates, args.Tray.Owner);
-            _plantTray.RemovePlant(args.Tray.AsNullable());
-            tray.ForceUpdate = true;
-            _plantTray.Update(args.Tray.AsNullable());
-            return;
-        }
-
-        if (component.WaterConsumption > 0 && tray.WaterLevel > 0 && _random.Prob(0.75f))
-        {
-            tray.WaterLevel -= MathF.Max(0f,
-                component.WaterConsumption * tray.TrayConsumptionMultiplier * tray.TraySpeedMultiplier);
-
-            if (tray.DrawWarnings)
-                tray.UpdateSpriteAfterUpdate = true;
-        }
-
-        if (component.NutrientConsumption > 0 && tray.NutritionLevel > 0 && _random.Prob(0.75f))
-        {
-            tray.NutritionLevel -= MathF.Max(0f,
-                component.NutrientConsumption * tray.TrayConsumptionMultiplier * tray.TraySpeedMultiplier);
+            _plantTray.AdjustNutrient(trayUid,  -MathF.Max(0f, plantComp.NutrientConsumption * trayComp.TrayConsumptionMultiplier));
 
             if (tray.DrawWarnings)
                 tray.UpdateSpriteAfterUpdate = true;
@@ -94,62 +81,28 @@ public sealed class BasicGrowthSystem : EntitySystem
         if (holder.SkipAging < 10)
         {
             // Make sure the plant is not thirsty.
-            if (tray.WaterLevel > 10)
+            if (trayComp.WaterLevel > 10)
             {
                 holder.Health += Convert.ToInt32(_random.Prob(0.35f)) * healthMod;
             }
             else
             {
-                AffectGrowth((plantUid, holder), -1);
-                holder.Health -= healthMod;
+                _plantHarvest.AffectGrowth(plantUid, -1);
+                _plantHolder.AdjustsHealth(plantUid, -healthMod);
             }
 
-            if (tray.NutritionLevel > 5)
+            if (trayComp.NutritionLevel > 5)
             {
                 holder.Health += Convert.ToInt32(_random.Prob(0.35f)) * healthMod;
             }
             else
             {
-                AffectGrowth((plantUid, holder), -1);
-                holder.Health -= healthMod;
+                _plantHarvest.AffectGrowth(plantUid, -1);
+                _plantHolder.AdjustsHealth(plantUid, -healthMod);
             }
 
             if (tray.DrawWarnings)
                 tray.UpdateSpriteAfterUpdate = true;
-        }
-    }
-
-    /// <summary>
-    /// Affects the growth of a plant by modifying its age or production timing.
-    /// </summary>
-    [PublicAPI]
-    public void AffectGrowth(Entity<PlantHolderComponent?> ent, int amount)
-    {
-        if (amount == 0)
-            return;
-
-        var (uid, component) = ent;
-
-        if (!Resolve(uid, ref component, false))
-            return;
-
-        if (!TryComp<PlantHarvestComponent>(uid, out var harvest)
-            || !TryComp<PlantComponent>(uid, out var plant))
-            return;
-
-        if (amount > 0)
-        {
-            if (component.Age < plant.Maturation)
-                component.Age += amount;
-            else if (!harvest.ReadyForHarvest && plant.Yield <= 0f)
-                harvest.LastHarvest -= amount;
-        }
-        else
-        {
-            if (component.Age < plant.Maturation)
-                component.SkipAging++;
-            else if (!harvest.ReadyForHarvest && plant.Yield <= 0f)
-                harvest.LastHarvest += amount;
         }
     }
 }

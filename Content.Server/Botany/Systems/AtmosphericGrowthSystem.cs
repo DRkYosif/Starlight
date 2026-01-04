@@ -36,19 +36,14 @@ public sealed class AtmosphericGrowthSystem : EntitySystem
 
     private void OnPlantGrow(Entity<AtmosphericGrowthComponent> ent, ref OnPlantGrowEvent args)
     {
-        var (plantUid, component) = ent;
-        var (_, tray) = args.Tray;
-
-        if (!TryComp<PlantHolderComponent>(plantUid, out var holder))
+        if (!TryComp<PlantHolderComponent>(ent.Owner, out var holder))
             return;
 
-        var environment = _atmosphere.GetContainingMixture(plantUid, true, true) ?? GasMixture.SpaceGas;
-        if (MathF.Abs(environment.Temperature - component.IdealHeat) > component.HeatTolerance)
+        var environment = _atmosphere.GetContainingMixture(ent.Owner, true, true) ?? GasMixture.SpaceGas;
+        if (MathF.Abs(environment.Temperature - ent.Comp.IdealHeat) > ent.Comp.HeatTolerance)
         {
-            holder.Health -= _random.Next(1, 3);
-            tray.ImproperHeat = true;
-            if (tray.DrawWarnings)
-                tray.UpdateSpriteAfterUpdate = true;
+            _plantHolder.AdjustsHealth(ent.Owner, -_random.Next(1, 3));
+            holder.ImproperHeat = true;
         }
         else
         {
@@ -56,12 +51,10 @@ public sealed class AtmosphericGrowthSystem : EntitySystem
         }
 
         var pressure = environment.Pressure;
-        if (pressure < component.LowPressureTolerance || pressure > component.HighPressureTolerance)
+        if (pressure < ent.Comp.LowPressureTolerance || pressure > ent.Comp.HighPressureTolerance)
         {
-            holder.Health -= _random.Next(1, 3);
-            tray.ImproperPressure = true;
-            if (tray.DrawWarnings)
-                tray.UpdateSpriteAfterUpdate = true;
+            _plantHolder.AdjustsHealth(ent.Owner, -_random.Next(1, 3));
+            holder.ImproperPressure = true;
         }
         else
         {

@@ -19,6 +19,7 @@ public sealed partial class MutationSystem : EntitySystem
     [Dependency] private readonly PlantTraySystem _plantTray = default!;
     [Dependency] private readonly SharedEntityEffectsSystem _entityEffects = default!;
     [Dependency] private readonly TransformSystem _transform = default!;
+    [Dependency] private readonly PlantTraitsSystem _plantTraits = default!;
 
     private static readonly ProtoId<RandomPlantMutationListPrototype> RandomPlantMutations = "RandomPlantMutations";
     private RandomPlantMutationListPrototype _randomMutations = default!;
@@ -45,7 +46,7 @@ public sealed partial class MutationSystem : EntitySystem
                     _entityEffects.TryApplyEffect(trayEnt, mutation.Effect);
 
                 // Stat adjustments do not persist by being an attached effect, they just change the stat.
-                if (mutation.Persists && !plantEnt.Comp.Mutations.Any(m => m.Name == mutation.Name))
+                if (mutation.Persists && plantEnt.Comp.Mutations.All(m => m.Name != mutation.Name))
                     plantEnt.Comp.Mutations.Add(mutation);
             }
         }
@@ -99,7 +100,7 @@ public sealed partial class MutationSystem : EntitySystem
         // LINQ Explanation
         // For the list of mutation effects on both plants, use a 50% chance to pick each one.
         // Union all of the chosen mutations into one list, and pick ones with a Distinct (unique) name.
-        targetCore.Mutations = targetCore.Mutations.Where(m => Random(0.5f)).Union(pollenCore.Mutations.Where(m => Random(0.5f))).DistinctBy(m => m.Name).ToList();
+        targetCore.Mutations = targetCore.Mutations.Where(_ => Random(0.5f)).Union(pollenCore.Mutations.Where(_ => Random(0.5f))).DistinctBy(m => m.Name).ToList();
 
         // Hybrids have a high chance of being seedless. Balances very
         // effective hybrid crossings.
@@ -107,8 +108,7 @@ public sealed partial class MutationSystem : EntitySystem
             && pollenProtoId != MetaData(targetPlant).EntityPrototype?.ID
             && Random(0.7f))
         {
-            if (TryComp<PlantTraitsComponent>(targetPlant, out var traits))
-                traits.Seedless = true;
+            _plantTraits.AddTrait(targetPlant, new TraitSeedless());
         }
     }
 
@@ -200,6 +200,19 @@ public sealed partial class MutationSystem : EntitySystem
     public void CrossBool(ref bool val, bool other)
     {
         val = Random(0.5f) ? val : other;
+    }
+
+    [PublicAPI]
+    public void CrossTrait(ref Entity<PlantTraitsComponent> val, List<PlantTrait> other)
+    {
+        foreach (var trait in other.ToArray())
+        {
+            if (val.Comp.Traits.Any(t => t.GetType() == trait.GetType()))
+                continue;
+
+            if (Random(0.5f))
+                _plantTraits.AddTrait(val.AsNullable(), trait);
+        }
     }
 
     private bool Random(float p)

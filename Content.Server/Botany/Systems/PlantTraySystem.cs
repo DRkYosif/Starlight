@@ -16,13 +16,12 @@ using Content.Shared.IdentityManagement;
 using Content.Shared.Interaction;
 using Content.Shared.Labels.Components;
 using Content.Shared.Popups;
-using Content.Shared.Random;
 using Content.Shared.Tag;
 using Robust.Server.GameObjects;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Player;
-using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
+using Robust.Shared.Prototypes;
 using Robust.Shared.Timing;
 
 namespace Content.Server.Botany.Systems;
@@ -30,220 +29,44 @@ namespace Content.Server.Botany.Systems;
 public sealed class PlantTraySystem : EntitySystem
 {
     [Dependency] private readonly AppearanceSystem _appearance = default!;
-    [Dependency] private readonly BotanySystem _botany = default!;
     [Dependency] private readonly IComponentFactory _componentFactory = default!;
     [Dependency] private readonly IGameTiming _gameTiming = default!;
     [Dependency] private readonly IPrototypeManager _prototype = default!;
-    [Dependency] private readonly IRobustRandom _random = default!;
     [Dependency] private readonly ISharedAdminLogManager _adminLogger = default!;
     [Dependency] private readonly ItemSlotsSystem _itemSlots = default!;
-    [Dependency] private readonly MutationSystem _mutation = default!;
     [Dependency] private readonly PlantHolderSystem _plantHolder = default!;
     [Dependency] private readonly PopupSystem _popup = default!;
-    [Dependency] private readonly RandomHelperSystem _randomHelper = default!;
     [Dependency] private readonly SharedAudioSystem _audio = default!;
     [Dependency] private readonly SharedEntityEffectsSystem _entityEffects = default!;
     [Dependency] private readonly SharedSolutionContainerSystem _solutionContainer = default!;
     [Dependency] private readonly TagSystem _tag = default!;
     [Dependency] private readonly TransformSystem _transform = default!;
-
-    private static readonly ProtoId<TagPrototype> HoeTag = "Hoe";
+    [Dependency] private readonly IRobustRandom _random = default!;
 
     public override void Initialize()
     {
         SubscribeLocalEvent<PlantTrayComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<PlantTrayComponent, InteractUsingEvent>(OnInteractUsing);
         SubscribeLocalEvent<PlantTrayComponent, SolutionTransferredEvent>(OnSolutionTransferred);
     }
 
     private void OnExamine(Entity<PlantTrayComponent> ent, ref ExaminedEvent args)
     {
-        var (uid, component) = ent;
-
         if (!args.IsInDetailsRange)
             return;
 
         using (args.PushGroup(nameof(PlantTrayComponent)))
         {
-            if (component.PlantEntity == null || Deleted(component.PlantEntity))
+            if (TryGetPlant(ent.AsNullable(), out var plantUid))
                 args.PushMarkup(Loc.GetString("plant-holder-component-nothing-planted-message"));
 
-            if (component.WeedLevel >= 5)
-                args.PushMarkup(Loc.GetString("plant-holder-component-weed-high-level-message"));
+            args.PushMarkup(Loc.GetString("plant-holder-component-water-level-message",
+                ("waterLevel", (int)ent.Comp.WaterLevel)));
+            args.PushMarkup(Loc.GetString("plant-holder-component-nutrient-level-message",
+                ("nutritionLevel", (int)ent.Comp.NutritionLevel)));
 
-            if (component.PestLevel >= 5)
-                args.PushMarkup(Loc.GetString("plant-holder-component-pest-high-level-message"));
-
-            args.PushMarkup(Loc.GetString($"plant-holder-component-water-level-message",
-                ("waterLevel", (int)component.WaterLevel)));
-            args.PushMarkup(Loc.GetString($"plant-holder-component-nutrient-level-message",
-                ("nutritionLevel", (int)component.NutritionLevel)));
-
-            if (component.DrawWarnings)
-            {
-                if (component.Toxins > 40f)
-                    args.PushMarkup(Loc.GetString("plant-holder-component-toxins-high-warning"));
-
-                if (component.ImproperHeat)
-                    args.PushMarkup(Loc.GetString("plant-holder-component-heat-improper-warning"));
-
-                if (component.ImproperPressure)
-                    args.PushMarkup(Loc.GetString("plant-holder-component-pressure-improper-warning"));
-
-                if (component.MissingGas > 0)
-                    args.PushMarkup(Loc.GetString("plant-holder-component-gas-missing-warning"));
-            }
-        }
-    }
-
-    private void OnInteractUsing(Entity<PlantTrayComponent> ent, ref InteractUsingEvent args)
-    {
-        if (args.Handled)
-            return;
-
-        var (uid, tray) = ent;
-
-        // Planting seeds is tray interaction.
-        if (TryComp(args.Used, out SeedComponent? seeds))
-        {
-            if (tray.PlantEntity == null || Deleted(tray.PlantEntity))
-            {
-                args.Handled = true;
-                var plantUid = Spawn(seeds.PlantProtoId, _transform.GetMapCoordinates(uid), seeds.PlantData);
-
-                if (!TryComp<PlantDataComponent>(plantUid, out var plantData))
-                    return;
-
-                var name = Loc.GetString(plantData.DisplayName);
-                var noun = Loc.GetString(plantData.Noun);
-                _popup.PopupCursor(Loc.GetString("plant-holder-component-plant-success-message",
-                        ("seedName", name),
-                        ("seedNoun", noun)),
-                    args.User,
-                    PopupType.Medium);
-
-                PlantingPlantInTray(uid, plantUid);
-
-                if (TryComp<PlantHolderComponent>(tray.PlantEntity!.Value, out var plantHolder)
-                    && seeds.HealthOverride != null)
-                {
-                    plantHolder.Health = seeds.HealthOverride.Value;
-                }
-
-                if (TryComp<PaperLabelComponent>(args.Used, out var paperLabel))
-                    _itemSlots.TryEjectToHands(args.Used, paperLabel.LabelSlot, args.User);
-
-                QueueDel(args.Used);
-
-                if (plantData.PlantLogImpact != null)
-                    _adminLogger.Add(LogType.Botany, plantData.PlantLogImpact.Value,
-                        $"{ToPrettyString(args.User):player} planted {Loc.GetString(plantData.DisplayName):seed} at Pos:{Transform(uid).Coordinates}.");
-
-                return;
-            }
-
-            args.Handled = true;
-            _popup.PopupCursor(
-                Loc.GetString("plant-holder-component-already-seeded-message", ("name", MetaData(uid).EntityName)),
-                args.User,
-                PopupType.Medium);
-            return;
-        }
-
-        // Hoe uproots weeds on the tray.
-        if (_tag.HasTag(args.Used, HoeTag))
-        {
-            args.Handled = true;
-            if (tray.WeedLevel > 0)
-            {
-                _popup.PopupCursor(
-                    Loc.GetString("plant-holder-component-remove-weeds-message", ("name", MetaData(uid).EntityName)),
-                    args.User,
-                    PopupType.Medium);
-                _popup.PopupEntity(
-                    Loc.GetString("plant-holder-component-remove-weeds-others-message",
-                        ("otherName", MetaData(args.User).EntityName)),
-                    uid,
-                    Filter.PvsExcept(args.User),
-                    true);
-                tray.WeedLevel = 0;
-                UpdateSprite(ent.AsNullable());
-            }
-            else
-            {
-                _popup.PopupCursor(Loc.GetString("plant-holder-component-no-weeds-message"), args.User);
-            }
-
-            return;
-        }
-
-        // Shovel removes the currently planted entity.
-        if (HasComp<ShovelComponent>(args.Used))
-        {
-            args.Handled = true;
-            if (tray.PlantEntity != null && !Deleted(tray.PlantEntity))
-            {
-                _popup.PopupCursor(
-                    Loc.GetString("plant-holder-component-remove-plant-message", ("name", MetaData(uid).EntityName)),
-                    args.User,
-                    PopupType.Medium);
-                _popup.PopupEntity(
-                    Loc.GetString("plant-holder-component-remove-plant-others-message",
-                        ("name", MetaData(args.User).EntityName)),
-                    uid,
-                    Filter.PvsExcept(args.User),
-                    true);
-                RemovePlant(ent.AsNullable());
-            }
-            else
-            {
-                _popup.PopupCursor(
-                    Loc.GetString("plant-holder-component-no-plant-message", ("name", MetaData(uid).EntityName)),
-                    args.User);
-            }
-
-            return;
-        }
-
-        // Composting produce is tray interaction (tray stores reagents/resources).
-        if (TryComp<ProduceComponent>(args.Used, out var produce))
-        {
-            args.Handled = true;
-            _popup.PopupCursor(Loc.GetString("plant-holder-component-compost-message",
-                    ("owner", uid),
-                    ("usingItem", args.Used)),
-                args.User,
-                PopupType.Medium);
-            _popup.PopupEntity(Loc.GetString("plant-holder-component-compost-others-message",
-                    ("user", Identity.Entity(args.User, EntityManager)),
-                    ("usingItem", args.Used),
-                    ("owner", uid)),
-                uid,
-                Filter.PvsExcept(args.User),
-                true);
-
-            if (_solutionContainer.TryGetSolution(args.Used, produce.SolutionName, out var soln2, out var solution2))
-            {
-                if (_solutionContainer.ResolveSolution(uid, tray.SoilSolutionName, ref tray.SoilSolution, out var solution1))
-                {
-                    // We try to fit as much of the composted plant's contained solution into the hydroponics tray as we can,
-                    // since the plant will be consumed anyway.
-                    var fillAmount = FixedPoint2.Min(solution2.Volume, solution1.AvailableVolume);
-                    _solutionContainer.TryAddSolution(tray.SoilSolution.Value, _solutionContainer.SplitSolution(soln2.Value, fillAmount));
-
-                    ForceUpdateByExternalCause(ent.AsNullable());
-                }
-            }
-
-            var plantData = produce.PlantData;
-            if (plantData != null &&
-                plantData.TryGetComponent(_componentFactory, out PlantComponent? compostPlant))
-            {
-                var nutrientBonus = compostPlant.Potency / 2.5f;
-                AdjustNutrient(ent.AsNullable(), nutrientBonus);
-            }
-
-            QueueDel(args.Used);
+            args.PushMarkup(GetTrayWarningsMarkup(ent.AsNullable()));
+            if (plantUid != null && ent.Comp.DrawWarnings)
+                args.PushMarkup(_plant.GetPlantWarningsMarkup(plantUid.Value));
         }
     }
 
@@ -265,6 +88,10 @@ public sealed class PlantTraySystem : EntitySystem
             tray.NextUpdate = _gameTiming.CurTime + tray.UpdateDelay;
             UpdateWarnings(uid);
             UpdateReagents(uid);
+            GrowthWeeds(uid);
+
+            var ev = new TrayUpdateEvent();
+            RaiseLocalEvent(uid, ref ev);
         }
     }
 
@@ -274,22 +101,22 @@ public sealed class PlantTraySystem : EntitySystem
     [PublicAPI]
     public void UpdateWarnings(Entity<PlantTrayComponent?> ent)
     {
-        var (uid, component) = ent;
+        var (trayUid, trayComp) = ent;
 
-        if (!Resolve(uid, ref component, false))
+        if (!Resolve(trayUid, ref trayComp, false))
             return;
 
-        if (!component.DrawWarnings)
+        if (!trayComp.DrawWarnings)
             return;
 
-        if (!TryComp<AppearanceComponent>(uid, out var app))
+        if (!TryComp<AppearanceComponent>(trayUid, out var app))
             return;
 
         if (!TryGetPlant(ent, out var plantUid))
         {
-            _appearance.SetData(uid, PlantTrayVisuals.HealthLight, false, app);
-            _appearance.SetData(uid, PlantTrayVisuals.AlertLight, false, app);
-            _appearance.SetData(uid, PlantTrayVisuals.HarvestLight, false, app);
+            _appearance.SetData(trayUid, PlantTrayVisuals.HealthLight, false, app);
+            _appearance.SetData(trayUid, PlantTrayVisuals.AlertLight, false, app);
+            _appearance.SetData(trayUid, PlantTrayVisuals.HarvestLight, false, app);
             return;
         }
 
@@ -299,15 +126,15 @@ public sealed class PlantTraySystem : EntitySystem
             return;
 
         // TODO: dehardcode those alert levels.
-        _appearance.SetData(uid, PlantTrayVisuals.HealthLight, plantHolder.Health <= plant.Endurance / 2f, app);
-        _appearance.SetData(uid, PlantTrayVisuals.WaterLight, component.WaterLevel <= 15, app);
-        _appearance.SetData(uid, PlantTrayVisuals.NutritionLight, component.NutritionLevel <= 8, app);
-        _appearance.SetData(uid,
+        _appearance.SetData(trayUid, PlantTrayVisuals.HealthLight, plantHolder.Health <= plant.Endurance / 2f, app);
+        _appearance.SetData(trayUid, PlantTrayVisuals.WaterLight, trayComp.WaterLevel <= 15, app);
+        _appearance.SetData(trayUid, PlantTrayVisuals.NutritionLight, trayComp.NutritionLevel <= 8, app);
+        _appearance.SetData(trayUid,
             PlantTrayVisuals.AlertLight,
-            component.WeedLevel >= 5 || plantHolder.PestLevel >= 5 || plantHolder.Toxins >= 40 || plantHolder.ImproperHeat
-            || plantHolder.ImproperPressure || plantHolder.MissingGas > 0,
+            trayComp.WeedLevel >= 5 || plantHolder.PestLevel >= 5 || plantHolder.Toxins >= 40 || plantHolder.ImproperHeat
+            || plantHolder.ImproperPressure || plantHolder.MissingGas,
             app);
-        _appearance.SetData(uid, PlantTrayVisuals.HarvestLight, harvest is { ReadyForHarvest: true }, app);
+        _appearance.SetData(trayUid, PlantTrayVisuals.HarvestLight, harvest is { ReadyForHarvest: true }, app);
     }
 
     /// <summary>
@@ -316,12 +143,12 @@ public sealed class PlantTraySystem : EntitySystem
     [PublicAPI]
     public void UpdateReagents(Entity<PlantTrayComponent?> ent)
     {
-        var (uid, component) = ent;
+        var (trayUid, trayComp) = ent;
 
-        if (!Resolve(uid, ref component, false))
+        if (!Resolve(trayUid, ref trayComp, false))
             return;
 
-        if (!_solutionContainer.ResolveSolution(uid, component.SoilSolutionName, ref component.SoilSolution, out var solution))
+        if (!_solutionContainer.ResolveSolution(trayUid, trayComp.SoilSolutionName, ref trayComp.SoilSolution, out var solution))
             return;
 
         if (!TryGetPlant(ent, out var plantUid))
@@ -332,31 +159,52 @@ public sealed class PlantTraySystem : EntitySystem
 
         if (solution.Volume > 0 && plantHolder.MutationLevel < 25)
         {
-            var contents = component.SoilSolution.Value.Comp.Solution.Contents.ToArray();
+            var contents = trayComp.SoilSolution.Value.Comp.Solution.Contents.ToArray();
 
             foreach (var entry in contents)
             {
                 var reagentProto = _prototype.Index<ReagentPrototype>(entry.Reagent.Prototype);
-                _entityEffects.ApplyEffects(uid, [.. reagentProto.PlantMetabolisms], entry.Quantity.Float());
+                _entityEffects.ApplyEffects(trayUid, [.. reagentProto.PlantMetabolisms], entry.Quantity.Float());
                 _entityEffects.ApplyEffects(plantUid.Value, [.. reagentProto.PlantMetabolisms], entry.Quantity.Float());
             }
 
-            _solutionContainer.RemoveEachReagent(component.SoilSolution.Value, FixedPoint2.New(1));
+            _solutionContainer.RemoveEachReagent(trayComp.SoilSolution.Value, FixedPoint2.New(1));
         }
+    }
+
+    private void GrowthWeeds(Entity<PlantTrayComponent?> ent)
+    {
+        if (!Resolve(ent.Owner, ref ent.Comp, false))
+            return;
+
+        if (ent.Comp is not { WaterLevel: > 10, NutritionLevel: > 5 })
+            return;
+
+        if (TryGetPlant(ent, out var plantUid))
+        {
+            if (!TryComp<WeedPestGrowthComponent>(plantUid.Value, out var weedPestGrowth))
+                return;
+
+            if (ent.Comp.WeedLevel > weedPestGrowth.WeedTolerance)
+                _plantHolder.AdjustsHealth(plantUid.Value, -weedPestGrowth.WeedDamageAmount);
+        }
+
+        if (_random.Prob(ent.Comp.WeedGrowthChance))
+            AdjustWeed(ent, ent.Comp.WeedGrowthAmount);
     }
 
     /// <summary>
     /// Planting a plant in a tray.
     /// </summary>
     [PublicAPI]
-    public void PlantingPlantInTray(Entity<PlantTrayComponent?> trayEnt, EntityUid plantUid)
+    public void PlantingPlantInTray(Entity<PlantTrayComponent?> trayEnt, EntityUid plantUid, float? healthOverride = null)
     {
         var (trayUid, trayComp) = trayEnt;
 
         if (!Resolve(trayUid, ref trayComp, false))
             return;
 
-        _plant.PlantingPlant(plantUid);
+        _plant.PlantingPlant(plantUid, healthOverride);
         _transform.SetCoordinates(plantUid, Transform(trayUid).Coordinates);
         _transform.SetParent(plantUid, trayUid);
         trayComp.PlantEntity = plantUid;
@@ -370,12 +218,11 @@ public sealed class PlantTraySystem : EntitySystem
     [PublicAPI]
     public void AdjustNutrient(Entity<PlantTrayComponent?> ent, float amount)
     {
-        var (uid, component) = ent;
-
-        if (!Resolve(uid, ref component, false))
+        if (!Resolve(ent.Owner, ref ent.Comp, false))
             return;
 
-        component.NutritionLevel += amount;
+        ent.Comp.NutritionLevel += amount;
+        ent.Comp.NutritionLevel = MathHelper.Clamp(ent.Comp.NutritionLevel, 0f, ent.Comp.MaxNutritionLevel);
     }
 
     /// <summary>
@@ -386,12 +233,11 @@ public sealed class PlantTraySystem : EntitySystem
     [PublicAPI]
     public void AdjustWater(Entity<PlantTrayComponent?> ent, float amount)
     {
-        var (uid, component) = ent;
-
-        if (!Resolve(uid, ref component, false))
+        if (!Resolve(ent.Owner, ref ent.Comp, false))
             return;
 
-        component.WaterLevel += amount;
+        ent.Comp.WaterLevel += amount;
+        ent.Comp.WaterLevel = MathHelper.Clamp(ent.Comp.WaterLevel, 0f, ent.Comp.MaxWaterLevel);
 
         // Water dilutes toxins.
         if (amount > 0)
@@ -401,134 +247,20 @@ public sealed class PlantTraySystem : EntitySystem
     }
 
     /// <summary>
-    /// Updates the reagents of the tray.
+    /// Adjusts the weed level of the tray.
     /// </summary>
-    /// <param name="ent">The entity tray component.</param>
     [PublicAPI]
-    public void UpdateReagents(Entity<PlantTrayComponent?> ent)
+    public void AdjustWeed(Entity<PlantTrayComponent?> ent, float amount)
     {
-        var (uid, component) = ent;
-
-        if (!Resolve(uid, ref component, false))
+        if (!Resolve(ent.Owner, ref ent.Comp, false))
             return;
 
-        if (!_solutionContainer.ResolveSolution(uid, component.SoilSolutionName, ref component.SoilSolution, out var solution))
-            return;
-
-        if (component.PlantEntity == null || Deleted(component.PlantEntity))
-            return;
-
-        if (!TryComp<PlantHolderComponent>(component.PlantEntity.Value, out var plantHolder))
-            return;
-
-        if (solution.Volume > 0 && (plantHolder == null || plantHolder.MutationLevel < 25))
-        {
-            foreach (var entry in component.SoilSolution.Value.Comp.Solution.Contents)
-            {
-                var reagentProto = _prototype.Index<ReagentPrototype>(entry.Reagent.Prototype);
-                _entityEffects.ApplyEffects(uid, [.. reagentProto.PlantMetabolisms], entry.Quantity.Float());
-                _entityEffects.ApplyEffects(component.PlantEntity.Value, [.. reagentProto.PlantMetabolisms], entry.Quantity.Float());
-            }
-
-            _solutionContainer.RemoveEachReagent(component.SoilSolution.Value, FixedPoint2.New(1));
-        }
+        ent.Comp.WeedLevel += amount * ent.Comp.WeedCoefficient;
+        ent.Comp.WeedLevel = MathHelper.Clamp(ent.Comp.WeedLevel, 0f, ent.Comp.MaxWeedLevel);
     }
 
     /// <summary>
-    /// Updates the sprite of the tray.
-    /// </summary>
-    [PublicAPI]
-    public void UpdateSprite(Entity<PlantTrayComponent?> ent)
-    {
-        var (uid, component) = ent;
-
-        if (!Resolve(uid, ref component, false))
-            return;
-
-        if (!TryComp<AppearanceComponent>(uid, out var app))
-            return;
-
-        PlantHarvestComponent? harvest = null;
-        PlantComponent? plant = null;
-        PlantHolderComponent? plantHolder = null;
-        PlantDataComponent? plantData = null;
-        if (component.PlantEntity != null && !Deleted(component.PlantEntity))
-        {
-            TryComp(component.PlantEntity.Value, out harvest);
-            TryComp(component.PlantEntity.Value, out plant);
-            TryComp(component.PlantEntity.Value, out plantHolder);
-            TryComp(component.PlantEntity.Value, out plantData);
-        }
-
-        component.UpdateSpriteAfterUpdate = false;
-
-        // Tray should never render plant sprite.
-        _appearance.SetData(uid, PlantVisuals.PlantState, string.Empty, app);
-
-        if (component.PlantEntity != null && !Deleted(component.PlantEntity) && harvest != null && plant != null && plantHolder != null && plantData != null)
-        {
-            if (TryComp<AppearanceComponent>(component.PlantEntity.Value, out var plantApp))
-            {
-                _appearance.SetData(component.PlantEntity.Value, PlantVisuals.PlantRsi, plantData.PlantRsi.ToString(), plantApp);
-
-                if (plantHolder.Dead)
-                    _appearance.SetData(component.PlantEntity.Value, PlantVisuals.PlantState, "dead", plantApp);
-                else if (harvest.ReadyForHarvest)
-                    _appearance.SetData(component.PlantEntity.Value, PlantVisuals.PlantState, "harvest", plantApp);
-                else
-                {
-                    if (plantHolder.Age < plant.Maturation)
-                    {
-                        var growthStage = Math.Max(1, (int)(plantHolder.Age * plant.GrowthStages / plant.Maturation));
-                        _appearance.SetData(component.PlantEntity.Value, PlantVisuals.PlantState, $"stage-{growthStage}", plantApp);
-                    }
-                    else
-                    {
-                        _appearance.SetData(component.PlantEntity.Value, PlantVisuals.PlantState, $"stage-{plant.GrowthStages}", plantApp);
-                    }
-                }
-            }
-        }
-
-        if (!component.DrawWarnings)
-            return;
-
-        // TODO: dehardcode those alert levels.
-        _appearance.SetData(uid, PlantHolderVisuals.HealthLight,
-            plantHolder != null && plant != null && plantHolder.Health <= plant.Endurance / 2f, app);
-        _appearance.SetData(uid, PlantHolderVisuals.WaterLight, component.WaterLevel <= 15, app);
-        _appearance.SetData(uid, PlantHolderVisuals.NutritionLight, component.NutritionLevel <= 8, app);
-        _appearance.SetData(uid,
-            PlantHolderVisuals.AlertLight,
-            component.WeedLevel >= 5 || component.PestLevel >= 5 || component.Toxins >= 40 || component.ImproperHeat
-            || component.ImproperPressure || component.MissingGas > 0,
-            app);
-        _appearance.SetData(uid, PlantHolderVisuals.HarvestLight, harvest is { ReadyForHarvest: true }, app);
-    }
-
-    /// <summary>
-    /// Forces an update of the tray by external cause.
-    /// </summary>
-    [PublicAPI]
-    public void ForceUpdateByExternalCause(Entity<PlantTrayComponent?> ent)
-    {
-        var (uid, component) = ent;
-
-        if (!Resolve(uid, ref component, false))
-            return;
-
-        if (component.PlantEntity != null && !Deleted(component.PlantEntity) &&
-            TryComp<PlantHolderComponent>(component.PlantEntity.Value, out var plantHolder))
-        {
-            plantHolder.SkipAging++;
-        }
-
-        component.ForceUpdate = true;
-        Update(ent);
-    }
-
-    /// <summary>
-    /// Checks if the tray contains a plant entity.
+    /// Tries to get the plant entity in the tray.
     /// </summary>
     [PublicAPI]
     public bool TryGetPlant(Entity<PlantTrayComponent?> ent, [NotNullWhen(true)] out EntityUid? plant)
@@ -539,7 +271,10 @@ public sealed class PlantTraySystem : EntitySystem
 
         plant = ent.Comp.PlantEntity;
         if (plant == null || Deleted(plant))
+        {
+            ent.Comp.PlantEntity = null;
             return false;
+        }
 
         return true;
     }
@@ -548,20 +283,37 @@ public sealed class PlantTraySystem : EntitySystem
     /// Checks if the tray contains a living plant entity.
     /// </summary>
     [PublicAPI]
-    public bool HasPlantAlive(Entity<PlantTrayComponent?> ent)
+    public bool TryGetAlivePlant(Entity<PlantTrayComponent?> ent, [NotNullWhen(true)] out EntityUid? plant)
     {
+        plant = null;
         if (!Resolve(ent.Owner, ref ent.Comp))
             return false;
 
         if (!TryGetPlant(ent.Owner, out var plant))
             return false;
 
-        if (!TryComp<PlantHolderComponent>(plant, out var holder))
-            return false;
+        return !_plantHolder.IsDead(ent.Owner);
+    }
 
-        if (holder.Dead)
-            return false;
+    /// <summary>
+    /// Gets the warnings markup of the tray.
+    /// </summary>
+    [PublicAPI]
+    public string GetTrayWarningsMarkup(Entity<PlantTrayComponent?> ent)
+    {
+        if (!Resolve(ent.Owner, ref ent.Comp, false))
+            return string.Empty;
 
-        return true;
+        var markup = string.Empty;
+        if (ent.Comp.WeedLevel >= 5)
+            markup += "\n" + Loc.GetString("plant-holder-component-weed-high-level-message");
+
+        return markup;
     }
 }
+
+/// <summary>
+/// Event raised when a tray is updated.
+/// </summary>
+[ByRefEvent]
+public readonly record struct TrayUpdateEvent;
