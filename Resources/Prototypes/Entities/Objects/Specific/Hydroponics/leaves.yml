@@ -9,7 +9,7 @@
   - type: Sprite
     sprite: Objects/Specific/Hydroponics/cannabis.rsi
   - type: Produce
-    seedId: cannabis
+    plantId: CannabisPlants
   - type: Edible # Precursor to the one true edible
   - type: SolutionContainerManager
     solutions:
@@ -92,7 +92,7 @@
       state: produce
       shader: unshaded
   - type: Produce
-    seedId: rainbowCannabis
+    plantId: RainbowCannabisPlants
   # disabled because 50 morbillion point lights still break the lighting engine
   #- type: PointLight
   #  radius: 1.5
@@ -199,7 +199,7 @@
   - type: Sprite
     sprite: Objects/Specific/Hydroponics/tea_plant.rsi
   - type: Produce
-    seedId: teaPlant
+    plantId: TeaPlantPlants
   - type: SolutionContainerManager
     solutions:
       food:
@@ -232,10 +232,7 @@
   - type: Sprite
     sprite: Objects/Specific/Hydroponics/tobacco.rsi
   - type: Produce
-    seedId: tobacco
-  - type: Tag
-    tags:
-    - Smokable
+    plantId: TobaccoPlants
   - type: SolutionContainerManager
     solutions:
       food:
