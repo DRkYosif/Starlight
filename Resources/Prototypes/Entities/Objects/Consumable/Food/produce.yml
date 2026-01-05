@@ -1506,7 +1506,7 @@
   - type: Item
     heldPrefix: produce
   - type: Produce
-    plantId: ChiliPepperPlants
+    plantId: ChiliPlants
   - type: Tag
     tags:
     - Vegetable
@@ -1542,7 +1542,7 @@
   - type: Item
     heldPrefix: produce
   - type: Produce
-    plantId: ChillyPepperPlants
+    plantId: ChillyPlants
   - type: FoodSequenceElement
     entries:
       Taco: ChillyPepper
@@ -2055,7 +2055,7 @@
         - ReagentId: Nutriment
           Quantity: 4
   - type: Produce
-    plantId: SoybeansPlants
+    plantId: SoybeanPlants
   - type: Extractable
     juiceSolution:
       reagents:
@@ -2397,7 +2397,7 @@
   - type: Item
     heldPrefix: produce
   - type: Produce
-    plantId: BerriesPlants
+    plantId: BerryPlants
   - type: Extractable
     juiceSolution:
       reagents:
