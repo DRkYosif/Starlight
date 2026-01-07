@@ -185,10 +185,8 @@ public sealed class PlantTraySystem : EntitySystem
         DirtyField(ent, nameof(ent.Comp.WaterLevel));
 
         // Water dilutes toxins.
-        if (amount > 0)
-        {
-            component.Toxins -= amount * 4f;
-        }
+        if (TryGetPlant(ent, out var plantUid) && amount > 0)
+            _plantHolder.AdjustsToxins(plantUid.Value, -amount * 4f);
     }
 
     /// <summary>
