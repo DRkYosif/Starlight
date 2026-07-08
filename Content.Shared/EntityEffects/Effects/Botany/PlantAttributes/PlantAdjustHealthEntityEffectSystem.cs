@@ -9,8 +9,7 @@ namespace Content.Shared.EntityEffects.Effects.Botany.PlantAttributes;
 /// <inheritdoc cref="EntityEffectSystem{T,TEffect}"/>
 public sealed partial class PlantAdjustHealthEntityEffectSystem : EntityEffectSystem<PlantTrayComponent, PlantAdjustHealth>
 {
-    [Dependency] private readonly PlantHolderSystem _plantHolder = default!;
-    [Dependency] private readonly PlantTraySystem _plantTray = default!;
+    [Dependency] private PlantHolderSystem _plantHolder = default!;
 
     protected override void Effect(Entity<PlantTrayComponent> entity, ref EntityEffectEvent<PlantAdjustHealth> args)
     {

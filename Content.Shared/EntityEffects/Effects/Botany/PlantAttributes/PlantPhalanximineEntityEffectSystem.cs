@@ -11,7 +11,7 @@ namespace Content.Shared.EntityEffects.Effects.Botany.PlantAttributes;
 /// <inheritdoc cref="EntityEffectSystem{T,TEffect}"/>
 public sealed partial class PlantPhalanximineEntityEffectSystem : EntityEffectSystem<PlantTrayComponent, PlantPhalanximine>
 {
-    [Dependency] private readonly PlantHolderSystem _plantHolder = default!;
+    [Dependency] private PlantHolderSystem _plantHolder = default!;
 
     protected override void Effect(Entity<PlantTrayComponent> entity, ref EntityEffectEvent<PlantPhalanximine> args)
     {
