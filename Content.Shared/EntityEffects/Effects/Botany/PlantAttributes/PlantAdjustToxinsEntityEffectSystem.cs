@@ -9,14 +9,14 @@ namespace Content.Shared.EntityEffects.Effects.Botany.PlantAttributes;
 /// <inheritdoc cref="EntityEffectSystem{T,TEffect}"/>
 public sealed partial class PlantAdjustToxinsEntityEffectSystem : EntityEffectSystem<PlantTrayComponent, PlantAdjustToxins>
 {
-    [Dependency] private PlantHolderSystem _plantHolder = default!;
+    [Dependency] private PlantTraySystem _plantTray = default!;
 
     protected override void Effect(Entity<PlantTrayComponent> entity, ref EntityEffectEvent<PlantAdjustToxins> args)
     {
-        if (!_plantTray.TryGetPlant(entity.AsNullable(), out _))
+        if (!_plantTray.TryGetAlivePlant(entity.AsNullable()))
             return;
 
-        entity.Comp.Toxins += args.Effect.Amount;
+        _plantTray.AdjustToxin(entity.AsNullable(), args.Effect.Amount);
     }
 }
 

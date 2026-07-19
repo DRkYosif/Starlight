@@ -194,8 +194,34 @@ public sealed partial class PlantTraySystem : EntitySystem
         DirtyField(ent, nameof(ent.Comp.WaterLevel));
 
         // Water dilutes toxins.
-        if (TryGetPlant(ent, out var plantUid) && amount > 0)
-            _plantHolder.AdjustsToxins(plantUid.Value, -amount * 4f);
+        if (amount > 0)
+            AdjustToxin(ent, -amount * 4f);
+    }
+
+    /// <summary>
+    /// Adjusts the pest level of the tray.
+    /// </summary>
+    [PublicAPI]
+    public void AdjustPest(Entity<PlantTrayComponent?> ent, float amount)
+    {
+        if (!Resolve(ent.Owner, ref ent.Comp, false))
+            return;
+
+        ent.Comp.PestLevel = MathHelper.Clamp(ent.Comp.PestLevel + amount, 0f, ent.Comp.MaxPestLevel);
+        DirtyField(ent, nameof(ent.Comp.PestLevel));
+    }
+
+    /// <summary>
+    /// Adjusts the toxin level of the tray.
+    /// </summary>
+    [PublicAPI]
+    public void AdjustToxin(Entity<PlantTrayComponent?> ent, float amount)
+    {
+        if (!Resolve(ent.Owner, ref ent.Comp, false))
+            return;
+
+        ent.Comp.ToxinLevel = MathHelper.Clamp(ent.Comp.ToxinLevel + amount, 0f, ent.Comp.MaxToxinLevel);
+        DirtyField(ent, nameof(ent.Comp.ToxinLevel));
     }
 
     /// <summary>
@@ -210,6 +236,15 @@ public sealed partial class PlantTraySystem : EntitySystem
         ent.Comp.WeedLevel += amount * ent.Comp.WeedCoefficient;
         ent.Comp.WeedLevel = MathHelper.Clamp(ent.Comp.WeedLevel, 0f, ent.Comp.MaxWeedLevel);
         DirtyField(ent, nameof(ent.Comp.WeedLevel));
+    }
+
+    [PublicAPI]
+    public bool GetToxinThreshold(Entity<PlantTrayComponent?> ent)
+    {
+        if (!Resolve(ent.Owner, ref ent.Comp, false))
+            return false;
+
+        return ent.Comp.ToxinLevel >= ent.Comp.MaxToxinLevel * 0.5f;
     }
 
     /// <summary>
@@ -233,6 +268,11 @@ public sealed partial class PlantTraySystem : EntitySystem
         return true;
     }
 
+    public bool TryGetAlivePlant(Entity<PlantTrayComponent?> ent)
+    {
+        return TryGetAlivePlant(ent, out _);
+    }
+
     /// <summary>
     /// Checks if the tray contains a living plant entity.
     /// </summary>
@@ -246,7 +286,7 @@ public sealed partial class PlantTraySystem : EntitySystem
         if (!TryGetPlant(ent.Owner, out var plant))
             return false;
 
-        return !_plantHolder.IsDead(ent.Owner);
+        return !_plantHolder.IsDead(plant.Value);
     }
 
     /// <summary>
@@ -267,6 +307,9 @@ public sealed partial class PlantTraySystem : EntitySystem
 
         if (GetNutrientThreshold(ent))
             markup.Add(Loc.GetString("tray-component-nutrient-low-warning"));
+
+        if (GetToxinThreshold(ent))
+            markup.Add(Loc.GetString("tray-component-toxin-high-level-warning"));
 
         return string.Join("\n", markup);
     }
