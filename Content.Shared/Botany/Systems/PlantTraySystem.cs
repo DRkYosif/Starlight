@@ -71,6 +71,9 @@ public sealed partial class PlantTraySystem : EntitySystem
             ent.Comp.SoilSolution = null;
     }
 
+    /// <summary>
+    /// Updates trays whose periodic processing is due.
+    /// </summary>
     public override void Update(float frameTime)
     {
         base.Update(frameTime);
@@ -238,6 +241,9 @@ public sealed partial class PlantTraySystem : EntitySystem
         DirtyField(ent, nameof(ent.Comp.WeedLevel));
     }
 
+    /// <summary>
+    /// Checks whether the tray's toxin level has reached half its maximum.
+    /// </summary>
     [PublicAPI]
     public bool GetToxinThreshold(Entity<PlantTrayComponent?> ent)
     {
@@ -314,6 +320,9 @@ public sealed partial class PlantTraySystem : EntitySystem
         return string.Join("\n", markup);
     }
 
+    /// <summary>
+    /// Checks whether the tray's weed level has reached half its maximum.
+    /// </summary>
     [PublicAPI]
     public bool GetWeedThreshold(Entity<PlantTrayComponent?> ent)
     {
@@ -323,6 +332,9 @@ public sealed partial class PlantTraySystem : EntitySystem
         return ent.Comp.WeedLevel >= ent.Comp.MaxWeedLevel * 0.5f;
     }
 
+    /// <summary>
+    /// Checks whether the tray's water level is critically low.
+    /// </summary>
     [PublicAPI]
     public bool GetWaterThreshold(Entity<PlantTrayComponent?> ent)
     {
@@ -332,6 +344,9 @@ public sealed partial class PlantTraySystem : EntitySystem
         return ent.Comp.WaterLevel <= ent.Comp.MaxWaterLevel * 0.1f;
     }
 
+    /// <summary>
+    /// Checks whether the tray's nutrient level is critically low.
+    /// </summary>
     [PublicAPI]
     public bool GetNutrientThreshold(Entity<PlantTrayComponent?> ent)
     {
