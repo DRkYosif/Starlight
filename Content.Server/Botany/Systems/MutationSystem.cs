@@ -11,16 +11,17 @@ namespace Content.Server.Botany;
 
 public sealed partial class MutationSystem : EntitySystem
 {
-    private static ProtoId<RandomPlantMutationListPrototype> RandomPlantMutations = "RandomPlantMutations";
+    private static readonly ProtoId<RandomPlantMutationListPrototype> RandomPlantMutations = "RandomPlantMutations";
 
     [Dependency] private readonly IRobustRandom _robustRandom = default!;
     [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
     [Dependency] private readonly BotanySystem _botanySystem = default!;
+    [Dependency] private readonly SharedEntityEffectsSystem _entityEffects = default!;
     private RandomPlantMutationListPrototype _randomMutations = default!;
 
     public override void Initialize()
     {
-        _randomMutations = _prototypeManager.Index(RandomPlantMutations);
+        _entityEffects.TryApplyEffect(plantHolder, mutation.Effect);
     }
 
     /// <summary>
@@ -79,7 +80,7 @@ public sealed partial class MutationSystem : EntitySystem
 
     public SeedData Cross(SeedData a, SeedData b)
     {
-        SeedData result = b.Clone();
+        var result = b.Clone();
 
         CrossChemicals(ref result.Chemicals, a.Chemicals);
 
@@ -119,9 +120,9 @@ public sealed partial class MutationSystem : EntitySystem
         foreach (var otherChem in other)
         {
             // if both have same chemical, randomly pick potency ratio from the two.
-            if (val.ContainsKey(otherChem.Key))
+            if (val.TryGetValue(otherChem.Key, out var value))
             {
-                val[otherChem.Key] = Random(0.5f) ? otherChem.Value : val[otherChem.Key];
+                val[otherChem.Key] = Random(0.5f) ? otherChem.Value : value;
             }
             // if target plant doesn't have this chemical, has 50% chance to add it.
             else
@@ -157,9 +158,9 @@ public sealed partial class MutationSystem : EntitySystem
         foreach (var otherGas in other)
         {
             // if both have same gas, randomly pick ammount from the two.
-            if (val.ContainsKey(otherGas.Key))
+            if (val.TryGetValue(otherGas.Key, out var value))
             {
-                val[otherGas.Key] = Random(0.5f) ? otherGas.Value : val[otherGas.Key];
+                val[otherGas.Key] = Random(0.5f) ? otherGas.Value : value;
             }
             // if target plant doesn't have this gas, has 50% chance to add it.
             else
