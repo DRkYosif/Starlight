@@ -1,5 +1,6 @@
 using Content.Server.Botany.Components;
 using Content.Shared.Database;
+using Content.Shared.Atmos;
 using Content.Shared.FixedPoint;
 using Content.Shared.Random;
 using Robust.Shared.Audio;
