@@ -25,7 +25,8 @@ using Robust.Shared.Serialization.Manager;
 using Robust.Shared.Timing;
 using Content.Shared.Chemistry.Reaction;
 using Content.Shared.Containers.ItemSlots;
-using LogType = Content.Shared.Database.LogType;
+using Content.Shared.Database;
+using Content.Shared.Kitchen.Components;
 using Content.Shared.Labels.Components;
 using System.Linq;
 
