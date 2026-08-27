@@ -1130,6 +1130,7 @@
     - FoodOnion
   mutationPrototypes:
     - onionred
+    - bloonion
   growthComponents:
     - !type:PlantTraitsComponent
         lifespan: 25
@@ -2743,3 +2744,27 @@
       Min: 1
       Max: 2
       PotencyDivisor: 40
+
+- type: seed
+  id: bloonion
+  name: seeds-bloonion-name
+  noun: seeds-noun-seeds
+  displayName: seeds-bloonion-display-name
+  plantRsi: Objects/Specific/Hydroponics/bloonion.rsi
+  packetPrototype: BloonionSeeds
+  productPrototypes:
+  - FoodBloonion
+  growthComponents:
+    - !type:PlantTraitsComponent
+        lifespan: 25
+        maturation: 15
+        production: 3
+        yield: 3
+        potency: 10
+        growthStages: 4
+    - !type:BasicGrowthComponent
+        waterConsumption: 0.6
+        nutrientConsumption: 0.5
+  chemicals:
+    Potassium:
+      Min: 1
