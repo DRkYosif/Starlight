@@ -3,6 +3,7 @@ using Content.Server.Botany.Components;
 using Content.Server.Botany.Systems;
 using Content.Server.Hands.Systems;
 using Content.Server.Popups;
+using Content.Shared.Administration.Logs;
 using Content.Shared.Botany;
 using Content.Shared.Burial.Components;
 using Content.Shared.Chemistry.EntitySystems;
