@@ -25,6 +25,6 @@ public sealed partial class PlantPhalanximineEntityEffectSystem : EntityEffectSy
 /// <inheritdoc cref="EntityEffect"/>
 public sealed partial class PlantPhalanximine : EntityEffectBase<PlantPhalanximine>
 {
-    public override string EntityEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys) =>
-        Loc.GetString("entity-effect-guidebook-plant-phalanximine", ("chance", Probability));
+    public override string EntityEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys, ILocalizationManager loc) // Starlight
+        => Loc.GetString("entity-effect-guidebook-plant-phalanximine", ("chance", Probability));
 }

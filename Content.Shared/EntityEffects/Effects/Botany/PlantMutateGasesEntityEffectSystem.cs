@@ -40,13 +40,11 @@ public sealed partial class PlantMutateExudeGases : EntityEffectBase<PlantMutate
     public float MaxValue = 0.5f;
 
     /// <inheritdoc/>
-    public override string EntityEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys)
-    {
-        return Loc.GetString("entity-effect-guidebook-plant-mutate-exude-gasses",
+    public override string EntityEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys, ILocalizationManager loc) // Starlight
+        => Loc.GetString("entity-effect-guidebook-plant-mutate-exude-gasses",
                 ("chance", Probability),
                 ("minValue", MinValue),
                 ("maxValue", MaxValue));
-    }
 }
 
 /// <summary>
@@ -82,11 +80,9 @@ public sealed partial class PlantMutateConsumeGases : EntityEffectBase<PlantMuta
     public float MaxValue = 0.5f;
 
     /// <inheritdoc/>
-    public override string EntityEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys)
-    {
-        return Loc.GetString("entity-effect-guidebook-plant-mutate-consume-gasses",
+    public override string EntityEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys, ILocalizationManager loc) // Starlight
+        => Loc.GetString("entity-effect-guidebook-plant-mutate-consume-gasses",
                 ("chance", Probability),
                 ("minValue", MinValue),
                 ("maxValue", MaxValue));
-    }
 }

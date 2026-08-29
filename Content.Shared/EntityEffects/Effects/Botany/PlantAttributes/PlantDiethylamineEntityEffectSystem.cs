@@ -34,6 +34,6 @@ public sealed partial class PlantDiethylamineEntityEffectSystem : EntityEffectSy
 /// <inheritdoc cref="EntityEffect"/>
 public sealed partial class PlantDiethylamine : EntityEffectBase<PlantDiethylamine>
 {
-    public override string EntityEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys) =>
-        Loc.GetString("entity-effect-guidebook-plant-diethylamine", ("chance", Probability));
+    public override string EntityEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys, ILocalizationManager loc) // Starlight
+        => Loc.GetString("entity-effect-guidebook-plant-diethylamine", ("chance", Probability));
 }

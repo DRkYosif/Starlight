@@ -96,51 +96,10 @@ public sealed partial class PlantTrayComponent : Component
     public bool DrawWarnings;
 
     /// <summary>
-    /// Current water level in the plant holder (0-100).
+    /// Sound played when any reagent is transferred into the tray.
     /// </summary>
     [DataField]
-    public float WaterLevel = 100f;
-
-    /// <summary>
-    /// Current nutrient level in the plant holder (0-100).
-    /// </summary>
-    [DataField]
-    public float NutritionLevel = 100f;
-
-    /// <summary>
-    /// Current pest level in the plant holder (0-10).
-    /// </summary>
-    [DataField]
-    public float PestLevel;
-
-    /// <summary>
-    /// Current weed level in the plant holder (0-10).
-    /// </summary>
-    [DataField]
-    public float WeedLevel;
-
-    /// <summary>
-    /// Multiplier for weed growth rate.
-    /// </summary>
-    [DataField]
-    public float WeedCoefficient = 1f;
-
-    /// <summary>
-    /// Current toxin level in the plant holder (0-100).
-    /// </summary>
-    [DataField]
-    public float Toxins;
-
-    /// <summary>
-    /// True if the plant is losing health due to too high/low temperature.
-    /// </summary>
-    [DataField]
-    public bool ImproperHeat;
-    /// <summary>
-    /// True if the plant is losing health due to too high/low pressure.
-    /// </summary>
-    [DataField]
-    public bool ImproperPressure;
+    public SoundSpecifier? WateringSound;
 
     /// <summary>
     /// Name of the solution container that holds the soil/nutrient solution.

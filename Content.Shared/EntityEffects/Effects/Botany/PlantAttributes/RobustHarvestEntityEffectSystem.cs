@@ -12,15 +12,15 @@ namespace Content.Shared.EntityEffects.Effects.Botany.PlantAttributes;
 /// Potency directly correlates to the size of the plant's produce.
 /// </summary>
 /// <inheritdoc cref="EntityEffectSystem{T,TEffect}"/>
-public sealed partial class RobustHarvestEntityEffectSystem : EntityEffectSystem<PlantTrayComponent, RobustHarvest>
+public sealed partial class RobustHarvestEntityEffectSystem : EntityEffectSystem<PlantComponent, RobustHarvest>
 {
     [Dependency] private IGameTiming _timing = default!;
     [Dependency] private PlantHolderSystem _plantHolder = default!;
     [Dependency] private PlantSystem _plant = default!;
 
-    protected override void Effect(Entity<PlantTrayComponent> entity, ref EntityEffectEvent<RobustHarvest> args)
+    protected override void Effect(Entity<PlantComponent> entity, ref EntityEffectEvent<RobustHarvest> args)
     {
-        if (!_plantTray.HasPlantAlive(entity.AsNullable()))
+        if (_plantHolder.IsDead(entity.Owner))
             return;
 
         if (entity.Comp.Potency < args.Effect.PotencyLimit)
@@ -61,12 +61,10 @@ public sealed partial class RobustHarvest : EntityEffectBase<RobustHarvest>
     [DataField]
     public int PotencySeedlessThreshold = 30;
 
-    public override string EntityEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys)
-    {
-        return Loc.GetString("entity-effect-guidebook-plant-robust-harvest",
+    public override string EntityEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys, ILocalizationManager loc) // Starlight
+        => Loc.GetString("entity-effect-guidebook-plant-robust-harvest",
             ("seedlesstreshold", PotencySeedlessThreshold),
             ("limit", PotencyLimit),
             ("increase", PotencyIncrease),
             ("chance", Probability));
-    }
 }

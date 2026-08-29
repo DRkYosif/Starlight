@@ -38,6 +38,6 @@ public sealed partial class PlantCryoxadoneEntityEffectSystem : EntityEffectSyst
 /// <inheritdoc cref="EntityEffect"/>
 public sealed partial class PlantCryoxadone : EntityEffectBase<PlantCryoxadone>
 {
-    public override string EntityEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys) =>
-        Loc.GetString("entity-effect-guidebook-plant-cryoxadone", ("chance", Probability));
+    public override string EntityEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys, ILocalizationManager loc) // Starlight
+        => Loc.GetString("entity-effect-guidebook-plant-cryoxadone", ("chance", Probability));
 }

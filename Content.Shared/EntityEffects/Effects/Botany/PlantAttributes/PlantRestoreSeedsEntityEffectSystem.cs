@@ -28,6 +28,6 @@ public sealed partial class PlantRestoreSeedsEntityEffectSystem : EntityEffectSy
 /// <inheritdoc cref="EntityEffect"/>
 public sealed partial class PlantRestoreSeeds : EntityEffectBase<PlantRestoreSeeds>
 {
-    public override string EntityEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys) =>
-        Loc.GetString("entity-effect-guidebook-plant-seeds-add", ("chance", Probability));
+    public override string EntityEffectGuidebookText(IPrototypeManager prototype, IEntitySystemManager entSys, ILocalizationManager loc) // Starlight
+        => Loc.GetString("entity-effect-guidebook-plant-seeds-add", ("chance", Probability));
 }

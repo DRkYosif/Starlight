@@ -47,7 +47,7 @@ public sealed partial class BotanySystem
         }
 
         _solutionContainer.EnsureSolution(ent.Owner, ent.Comp.TargetSolution, out var solution);
-        solution.Comp.Solution.RemoveAllSolution();
+        solution.Solution.RemoveAllSolution();
 
         foreach (var (chem, quantity) in chems.Chemicals)
         {
@@ -55,8 +55,8 @@ public sealed partial class BotanySystem
             if (quantity.PotencyDivisor > 0 && plant.Potency > 0)
                 amount += plant.Potency / quantity.PotencyDivisor;
             amount = FixedPoint2.Clamp(amount, quantity.Min, quantity.Max);
-            solution.Comp.Solution.MaxVolume += amount;
-            solution.Comp.Solution.AddReagent(chem, amount);
+            solution.Solution.MaxVolume += amount;
+            solution.Solution.AddReagent(chem, amount);
         }
     }
 

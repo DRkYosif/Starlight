@@ -815,28 +815,6 @@ public abstract partial class SharedSolutionContainerSystem : EntitySystem
             !CanSeeHiddenSolution(entity, args.Examiner) ||
             !TryGetSolution(entity.Owner, entity.Comp.Solution, out _, out var solution))
             return;
-        }
-
-        if (!CanSeeHiddenSolution(entity, args.Examiner))
-            return;
-
-        var primaryReagent = solution.GetPrimaryReagentId();
-
-        if (string.IsNullOrEmpty(primaryReagent?.Prototype))
-        {
-            args.PushText(Loc.GetString("shared-solution-container-component-on-examine-empty-container"));
-            return;
-        }
-
-        if (!PrototypeManager.TryIndex(primaryReagent.Value.Prototype, out ReagentPrototype? primary))
-        {
-            Log.Error($"{nameof(Solution)} could not find the prototype associated with {primaryReagent}.");
-            return;
-        }
-
-        var colorHex = solution.GetColor(PrototypeManager)
-            .ToHexNoAlpha(); //TODO: If the chem has a dark color, the examine text becomes black on a black background, which is unreadable.
-        var messageString = "shared-solution-container-component-on-examine-main-text";
 
         using (args.PushGroup(nameof(ExaminableSolutionComponent)))
         {
@@ -1089,12 +1067,9 @@ public abstract partial class SharedSolutionContainerSystem : EntitySystem
         var manager = EnsureComp<SolutionContainerManagerComponent>(uid);
         if (meta.EntityLifeStage >= EntityLifeStage.MapInitialized)
         {
-            if (!EnsureSolutionEntity((uid, manager), name, out existed, out var solEnt, maxVol, prototype))
-            {
-                solution = null;
-                return false;
-            }
-            solution = solEnt.Value.Comp.Solution;
+            EnsureSolutionEntity((uid, manager), name, out existed,
+                out var solEnt, maxVol, prototype);
+            solution = solEnt!.Value.Comp.Solution;
             return true;
         }
         solution = EnsureSolutionPrototype((uid, manager), name, maxVol, prototype, out existed);

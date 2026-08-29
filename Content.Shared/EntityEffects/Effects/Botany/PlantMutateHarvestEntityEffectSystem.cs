@@ -7,7 +7,7 @@ namespace Content.Shared.EntityEffects.Effects.Botany;
 /// Plant mutation entity effect that changes repeatability of plant harvesting (without re-planting).
 /// </summary>
 /// <inheritdoc cref="EntityEffectSystem{T,TEffect}"/>
-public sealed partial class PlantMutateHarvestEntityEffectSystem : EntityEffectSystem<PlantTrayComponent, PlantMutateHarvest>
+public sealed partial class PlantMutateHarvestEntityEffectSystem : EntityEffectSystem<PlantComponent, PlantMutateHarvest>
 {
     [Dependency] private PlantHarvestSystem _plantHarvest = default!;
 
