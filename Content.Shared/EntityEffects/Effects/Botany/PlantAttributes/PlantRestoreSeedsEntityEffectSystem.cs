@@ -10,14 +10,14 @@ namespace Content.Shared.EntityEffects.Effects.Botany.PlantAttributes;
 /// Entity effect that removes the <see cref="PlantTraitSeedlessComponent"/> from a plant.
 /// </summary>
 /// <inheritdoc cref="EntityEffectSystem{T,TEffect}"/>
-public sealed partial class PlantRestoreSeedsEntityEffectSystem : EntityEffectSystem<PlantTrayComponent, PlantRestoreSeeds>
+public sealed partial class PlantRestoreSeedsEntityEffectSystem : EntityEffectSystem<PlantComponent, PlantRestoreSeeds>
 {
     [Dependency] private SharedPopupSystem _popup = default!;
     [Dependency] private PlantHolderSystem _plantHolder = default!;
 
-    protected override void Effect(Entity<PlantTrayComponent> entity, ref EntityEffectEvent<PlantRestoreSeeds> args)
+    protected override void Effect(Entity<PlantComponent> entity, ref EntityEffectEvent<PlantRestoreSeeds> args)
     {
-        if (!_plantTray.HasPlantAlive(entity.AsNullable()))
+        if (_plantHolder.IsDead(entity.Owner))
             return;
 
         _popup.PopupEntity(Loc.GetString("botany-plant-seedsrestored"), entity);

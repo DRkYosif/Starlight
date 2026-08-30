@@ -10,14 +10,14 @@ namespace Content.Shared.EntityEffects.Effects.Botany.PlantAttributes;
 /// Entity effect that adds the <see cref="PlantTraitSeedlessComponent"/> to a plant.
 /// </summary>
 /// <inheritdoc cref="EntityEffectSystem{T,TEffect}"/>
-public sealed partial class PlantDestroySeedsEntityEffectSystem : EntityEffectSystem<PlantTrayComponent, PlantDestroySeeds>
+public sealed partial class PlantDestroySeedsEntityEffectSystem : EntityEffectSystem<PlantComponent, PlantDestroySeeds>
 {
     [Dependency] private SharedPopupSystem _popup = default!;
     [Dependency] private PlantHolderSystem _plantHolder = default!;
 
-    protected override void Effect(Entity<PlantTrayComponent> entity, ref EntityEffectEvent<PlantDestroySeeds> args)
+    protected override void Effect(Entity<PlantComponent> entity, ref EntityEffectEvent<PlantDestroySeeds> args)
     {
-        if (!_plantTray.TryGetPlant(entity.AsNullable(), out var plant))
+        if (_plantHolder.IsDead(entity.Owner))
             return;
 
         _popup.PopupEntity(

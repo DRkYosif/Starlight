@@ -178,9 +178,10 @@ public sealed partial class PlantSystem : EntitySystem
     /// Adjusts the potency of a plant component.
     /// </summary>
     [PublicAPI]
-    public void AdjustPotency(Entity<PlantComponent> ent, float delta)
+    public void AdjustPotency(Entity<PlantComponent?> ent, float amount)
     {
-        var (_, plant) = ent;
+        if (!Resolve(ent.Owner, ref ent.Comp, false))
+            return;
 
         ent.Comp.Potency = Math.Max(0, ent.Comp.Potency + amount);
         DirtyField(ent, nameof(ent.Comp.Potency));

@@ -9,13 +9,13 @@ namespace Content.Shared.EntityEffects.Effects.Botany.PlantAttributes;
 /// Entity effect that removes the <see cref="PlantTraitUnviableComponent"/> from a plant.
 /// </summary>
 /// <inheritdoc cref="EntityEffectSystem{T,TEffect}"/>
-public sealed partial class PlantPhalanximineEntityEffectSystem : EntityEffectSystem<PlantTrayComponent, PlantPhalanximine>
+public sealed partial class PlantPhalanximineEntityEffectSystem : EntityEffectSystem<PlantComponent, PlantPhalanximine>
 {
     [Dependency] private PlantHolderSystem _plantHolder = default!;
 
-    protected override void Effect(Entity<PlantTrayComponent> entity, ref EntityEffectEvent<PlantPhalanximine> args)
+    protected override void Effect(Entity<PlantComponent> entity, ref EntityEffectEvent<PlantPhalanximine> args)
     {
-        if (!_plantTray.TryGetPlant(entity.AsNullable(), out var plant))
+        if (_plantHolder.IsDead(entity.Owner))
             return;
 
         RemCompDeferred<PlantTraitUnviableComponent>(entity.Owner);

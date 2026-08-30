@@ -10,14 +10,14 @@ namespace Content.Shared.EntityEffects.Effects.Botany.PlantAttributes;
 /// Entity effect that reverts aging of plant.
 /// </summary>
 /// <inheritdoc cref="EntityEffectSystem{T,TEffect}"/>
-public sealed partial class PlantCryoxadoneEntityEffectSystem : EntityEffectSystem<PlantTrayComponent, PlantCryoxadone>
+public sealed partial class PlantCryoxadoneEntityEffectSystem : EntityEffectSystem<PlantComponent, PlantCryoxadone>
 {
     [Dependency] private PlantSystem _plant = default!;
     [Dependency] private PlantHolderSystem _plantHolder = default!;
     [Dependency] private PlantHarvestSystem _plantHarvest = default!;
     [Dependency] private IGameTiming _timing = default!;
 
-    protected override void Effect(Entity<PlantTrayComponent> entity, ref EntityEffectEvent<PlantCryoxadone> args)
+    protected override void Effect(Entity<PlantComponent> entity, ref EntityEffectEvent<PlantCryoxadone> args)
     {
         if (_plantHolder.IsDead(entity.Owner))
             return;
