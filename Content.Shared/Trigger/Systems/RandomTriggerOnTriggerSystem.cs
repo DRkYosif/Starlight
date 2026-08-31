@@ -2,6 +2,7 @@ using Content.Shared.Random.Helpers;
 using Content.Shared.Trigger.Components.Effects;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Timing;
+using Robust.Shared.Random;
 
 namespace Content.Shared.Trigger.Systems;
 
@@ -21,7 +22,8 @@ public sealed partial class RandomTriggerOnTriggerSystem : XOnTriggerSystem<Rand
             args.User == null ? 0 : GetNetEntity(args.User.Value).Id,
         };
         var seed = SharedRandomExtensions.HashCodeCombine(hash);
-        var rand = new System.Random(seed);
+        var rand = new RobustRandom();
+            rand.SetSeed(seed);
 
         var keyOut = _prototypeManager.Index(ent.Comp.RandomKeyOut).Pick(rand);
 
