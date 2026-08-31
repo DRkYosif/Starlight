@@ -82,9 +82,6 @@ public sealed partial class PlantGrowthSystem : EntitySystem
                 _plantHarvest.AffectGrowth(plantUid, -1);
                 _plantHolder.AdjustsHealth((plantUid, holder), -healthMod);
             }
-
-            if (tray.DrawWarnings)
-                tray.UpdateSpriteAfterUpdate = true;
         }
     }
 

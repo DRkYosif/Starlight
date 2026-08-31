@@ -148,9 +148,10 @@
   - type: SolutionContainerManager
   - type: Produce
     plantId: PapercanePlants
-  - type: Log
-    spawnedPrototype: SheetPaper1
-    spawnCount: 2
+  - type: ToolRefinable
+    refineResult:
+    - id: SheetPaper1
+      amount: 2
 
 - type: entity
   parent: FoodProduceBase
@@ -178,7 +179,7 @@
       - ReagentId: LaughinSyrup
         Quantity: 5
       - ReagentId: Hummus # Starlight
-        Quantity: 10 # Starlight
+        Quantity: 10
   - type: Sprite
     sprite: Objects/Specific/Hydroponics/laughin_pea.rsi
   - type: Item
@@ -207,7 +208,11 @@
         Blunt: 10
   - type: Produce
     plantId: TowercapPlants
-  - type: Log
+  - type: ToolRefinable
+    qualityNeeded: Sawing
+    refineResult:
+    - id: MaterialWoodPlank1
+      amount: 2
 
 - type: entity
   name: steel-cap log
@@ -226,9 +231,10 @@
         Blunt: 12
   - type: Produce
     plantId: SteelcapPlants
-  - type: Log
-    spawnedPrototype: SheetSteel1
-    spawnCount: 1
+  - type: ToolRefinable
+    qualityNeeded: Sawing
+    refineResult:
+    - id: SheetSteel1
 
 - type: entity
   name: nettle
@@ -885,11 +891,6 @@
     heldPrefix: produce
   - type: Produce
     plantId: PotatoPlants
-  - type: Extractable
-    juiceSolution:
-      reagents:
-      - ReagentId: JuicePotato
-        Quantity: 10
   - type: Tag
     tags:
     - Potato
@@ -1299,9 +1300,10 @@
     heldPrefix: produce
   - type: Produce
     plantId: OnionPlants
-  - type: SliceableFood
-    count: 5
-    slice: FoodOnionSlice
+  - type: ToolRefinable
+    refineResult:
+    - id: FoodOnionSlice
+      amount: 5
   - type: Tag
     tags:
     - Vegetable
@@ -1332,9 +1334,10 @@
     heldPrefix: produce
   - type: Produce
     plantId: OnionRedPlants
-  - type: SliceableFood
-    count: 5
-    slice: FoodOnionRedSlice
+  - type: ToolRefinable
+    refineResult:
+    - id: FoodOnionRedSlice
+      amount: 5
   - type: Tag
     tags:
     - Vegetable
@@ -2500,10 +2503,10 @@
         - ReagentId: Vitamin
           Quantity: 2
   - type: Extractable # Starlight
-    juiceSolution: # Starlight
-      reagents: # Starlight
-      - ReagentId: Hummus # Starlight
-        Quantity: 12 # Starlight
+    juiceSolution:
+      reagents:
+      - ReagentId: Hummus
+        Quantity: 12
   - type: Sprite
     sprite: Objects/Specific/Hydroponics/pea.rsi
   - type: Item
@@ -2539,10 +2542,10 @@
         - ReagentId: Pax
           Quantity: 2
   - type: Extractable # Starlight
-    juiceSolution: # Starlight
-      reagents: # Starlight
-      - ReagentId: Hummus # Starlight
-        Quantity: 20 # Starlight
+    juiceSolution:
+      reagents:
+      - ReagentId: Hummus
+        Quantity: 20
   - type: Sprite
     sprite: Objects/Specific/Hydroponics/world_pea.rsi
   - type: Item

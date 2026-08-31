@@ -65,7 +65,7 @@ public sealed partial class PlantMutationSystem : EntitySystem
     [PublicAPI]
     public void SpeciesChange(Entity<PlantDataComponent?> oldPlant, EntProtoId newPlantProto)
     {
-        if (!Resolve(oldPlant, ref oldPlant.Comp, false) || !Resolve(trayEnt, ref trayEnt.Comp, false))
+        if (!Resolve(oldPlant, ref oldPlant.Comp, false))
             return;
 
         if (oldPlant.Comp.MutationPrototypes.Count == 0)
