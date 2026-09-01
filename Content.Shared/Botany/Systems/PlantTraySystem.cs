@@ -168,8 +168,6 @@ public sealed partial class PlantTraySystem : EntitySystem
     /// <summary>
     /// Adjusts the nutrient level of the tray.
     /// </summary>
-    /// <param name="ent">The entity tray component.</param>
-    /// <param name="amount">The amount to adjust the nutrient level by.</param>
     [PublicAPI]
     public void AdjustNutrient(Entity<PlantTrayComponent?> ent, float amount)
     {
@@ -184,8 +182,6 @@ public sealed partial class PlantTraySystem : EntitySystem
     /// <summary>
     /// Adjusts the water level of the tray.
     /// </summary>
-    /// <param name="ent">The entity tray component.</param>
-    /// <param name="amount">The amount to adjust the water level by.</param>
     [PublicAPI]
     public void AdjustWater(Entity<PlantTrayComponent?> ent, float amount)
     {
@@ -280,7 +276,7 @@ public sealed partial class PlantTraySystem : EntitySystem
     }
 
     /// <summary>
-    /// Checks if the tray contains a living plant entity.
+    /// Tries to get the living plant entity in the tray.
     /// </summary>
     [PublicAPI]
     public bool TryGetAlivePlant(Entity<PlantTrayComponent?> ent, [NotNullWhen(true)] out EntityUid? plant)
@@ -289,7 +285,7 @@ public sealed partial class PlantTraySystem : EntitySystem
         if (!Resolve(ent.Owner, ref ent.Comp))
             return false;
 
-        if (!TryGetPlant(ent.Owner, out var plant))
+        if (!TryGetPlant(ent.Owner, out plant))
             return false;
 
         return !_plantHolder.IsDead(plant.Value);

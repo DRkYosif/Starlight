@@ -25,7 +25,7 @@ public sealed partial class PlantHolderSystem : EntitySystem
     }
 
     [SubscribeLocalEvent]
-    private void OnDamageDealt(Entity<PlantHolderComponent> ent, ref DamageModifyEvent args)
+    private void OnDamageDealt(Entity<PlantHolderComponent> ent, ref DamageDealtEvent args)
     {
         AdjustsHealth(ent.AsNullable(), -args.Damage.GetTotal().Float());
     }
